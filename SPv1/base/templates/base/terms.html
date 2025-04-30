@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'base/terms.css' %}">
+<link rel="stylesheet" href="{% static 'styles/terms.css' %}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>BookFind - Terms of Service</title>
+</head>
+
+{% block content %}
+    
+    <main>
+        <section class="terms-section container">
+            <h1 class="section-title">Terms of Service</h1>
+            
+            <div class="terms-content">
+                <div class="last-updated">Last Updated: April 1, 2025</div>
+                
+                <div class="terms-navigation">
+                    <ul>
+                        <li><a href="#acceptance">Acceptance of Terms</a></li>
+                        <li><a href="#changes">Changes to Terms</a></li>
+                        <li><a href="#account">User Accounts</a></li>
+                        <li><a href="#content">User Content</a></li>
+                        <li><a href="#privacy">Privacy Policy</a></li>
+                        <li><a href="#limitations">Limitations of Liability</a></li>
+                        <li><a href="#termination">Termination</a></li>
+                        <li><a href="#governing">Governing Law</a></li>
+                        <li><a href="#contact">Contact Information</a></li>
+                    </ul>
+                </div>
+                
+                <div class="terms-article">
+                    <h2 id="acceptance">1. Acceptance of Terms</h2>
+                    <p>By accessing or using the BookFind website ("Service"), you agree to be bound by these Terms of Service ("Terms"). If you disagree with any part of the terms, you may not access the Service.</p>
+                    
+                    <h2 id="changes">2. Changes to Terms</h2>
+                    <p>BookFind reserves the right, at our sole discretion, to modify or replace these Terms at any time. We will provide notice of any changes by posting the new Terms on this page. Your continued use of the Service after any such changes constitutes your acceptance of the new Terms.</p>
+                    
+                    <h2 id="account">3. User Accounts</h2>
+                    <p>When you create an account with us, you must provide information that is accurate, complete, and current at all times. Failure to do so constitutes a breach of the Terms, which may result in immediate termination of your account.</p>
+                    <p>You are responsible for safeguarding the password that you use to access the Service and for any activities or actions under your password. You agree not to disclose your password to any third party.</p>
+                    
+                    <h2 id="content">4. User Content</h2>
+                    <p>Our Service allows you to post, link, store, share and otherwise make available certain information, text, graphics, or other material ("Content"). You are responsible for the Content that you post on or through the Service, including its legality, reliability, and appropriateness.</p>
+                    <p>By posting Content on or through the Service, you represent and warrant that: (i) the Content is yours (you own it) or you have the right to use it and grant us the rights and license as provided in these Terms, and (ii) the posting of your Content on or through the Service does not violate the privacy rights, publicity rights, copyrights, contract rights or any other rights of any person.</p>
+                    
+                    <h2 id="privacy">5. Privacy Policy</h2>
+                    <p>Please refer to our Privacy Policy for information about how we collect, use, and disclose information about you.</p>
+                    
+                    <h2 id="limitations">6. Limitations of Liability</h2>
+                    <p>In no event shall BookFind, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from (i) your access to or use of or inability to access or use the Service; (ii) any conduct or content of any third party on the Service; (iii) any content obtained from the Service; and (iv) unauthorized access, use or alteration of your transmissions or content, whether based on warranty, contract, tort (including negligence) or any other legal theory, whether or not we have been informed of the possibility of such damage.</p>
+                    
+                    <h2 id="termination">7. Termination</h2>
+                    <p>We may terminate or suspend your account immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms. Upon termination, your right to use the Service will immediately cease.</p>
+                    
+                    <h2 id="governing">8. Governing Law</h2>
+                    <p>These Terms shall be governed and construed in accordance with the laws of Denmark, without regard to its conflict of law provisions. Our failure to enforce any right or provision of these Terms will not be considered a waiver of those rights.</p>
+                    
+                    <h2 id="contact">9. Contact Information</h2>
+                    <p>If you have any questions about these Terms, please contact us at:</p>
+                    <div class="contact-info-box">
+                        <p><strong>Email:</strong> legal@bookfind.com</p>
+                        <p><strong>Address:</strong> Alsion 2, 6400 Sonderborg, Denmark</p>
+                        <p><strong>Phone:</strong> +45 8888 7777</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="faq.html">FAQ</a>
+                <a href="privacy.html">Privacy Policy</a>
+                <a href="terms.html">Terms of Use</a>
+            </div>
+            <p>&copy; 2025 BookFind. All rights reserved.</p>
+        </div>
+    </footer>
+    <script src="js/script.js"></script>
+    <script src="js/terms.js"></script>
+</body>
+</html>
+{% endblock %}

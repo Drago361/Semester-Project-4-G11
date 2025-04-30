@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'base/faq.css' %}"> 
+
+{% block content %}
+  
+    
+    <main>
+        <script src="{% static '/js/faq.js' %}"></script> 
+        <section class="faq-section container">
+            <h1 class="page-title">Frequently Asked Questions</h1>
+            
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>How do I search for a book?</h3>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>You can search for books by entering a title, author, or keyword in the search bar on our homepage. You can also click on one of our suggested categories to browse books by genre.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>Is BookFind free to use?</h3>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes, BookFind is completely free to use. We provide book recommendations and information to help you discover your next great read without any charge.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>Can I purchase books directly from BookFind?</h3>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>BookFind is a book discovery platform, not a bookstore. We provide information about books and link to reputable retailers where you can purchase the books that interest you.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>How can I save my favorite books?</h3>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Once you've created an account, you can save books to your favorites by clicking the heart icon on any book card. You can access your saved books by visiting your profile page.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>Does BookFind have mobile apps?</h3>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Currently, BookFind is available as a mobile-responsive website that works well on all devices. We are developing dedicated mobile apps for iOS and Android, which will be available soon.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>How do I contact customer support?</h3>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>You can reach our customer support team by using the contact form on our Contact page. Alternatively, you can email us directly at support@bookfind.com.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>How often is the book database updated?</h3>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>We update our book database daily to ensure you have access to the latest releases and most accurate information. New books are typically added within 24-48 hours of their publication.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+{% endblock %}
