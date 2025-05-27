@@ -14,10 +14,10 @@ class BookResource(resources.ModelResource):
         model = Book  # or 'core.Book'
         import_id_fields = ('asin',)
         fields = (
-            'asin', 'title', 'author', 'soldBy', 'imgUrl', 'productUrl',
+            'asin', 'title', 'author', 'soldBy', 'imgUrl', 'productURL',
             'stars', 'reviews', 'price', 'isKindleUnlimited',
-            'categoryId', 'isBestSeller', 'isEditorsPick',
-            'isGoodReadsChoice', 'publishedDate', 'categoryName')
+            'category_id', 'isBestSeller', 'isEditorsPick',
+            'isGoodReadsChoice', 'publishedDate', 'category_name')
 
 def before_import(self, dataset, **kwargs):
     super().before_import(dataset, **kwargs)

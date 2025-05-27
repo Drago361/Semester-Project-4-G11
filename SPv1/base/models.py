@@ -3,28 +3,21 @@ from import_export import resources
 
 class Book(models.Model):
     asin = models.CharField(max_length=20, primary_key=True, null=False, blank=False)
-    # ASIN: Amazon Standard Identification Number
     title = models.TextField(null=False, blank=False)
-    # Title of the book
     author = models.CharField(max_length=255, null=False, blank=False)
-    # Author(s) of the book
     soldBy = models.CharField(max_length=255, null=True, blank=True)
-    # Seller of the book
     imgUrl = models.URLField()
-    # URL of the book's image
-    productUrl = models.URLField(null=True, blank=True)
-    # URL of the book's product page
+    productURL = models.URLField(null=True, blank=True)
     stars = models.DecimalField(max_digits=3, decimal_places=2)
     reviews = models.IntegerField()
     price = models.DecimalField(max_digits=6, decimal_places=2)
     isKindleUnlimited = models.BooleanField(null=True, blank=True)
-    categoryId = models.IntegerField(null=True, blank=True)
-    # Category ID of the book
-    isBestSeller = models.BooleanField()
-    isEditorsPick = models.BooleanField()
-    isGoodReadsChoice = models.BooleanField()
-    publishedDate = models.DateField(  null=True, blank=True)
-    categoryName = models.CharField(max_length=255)
+    category_id = models.IntegerField(null=True, blank=True)
+    isBestSeller = models.BooleanField(null=True, blank=True)
+    isEditorsPick = models.BooleanField(null=True, blank=True)
+    isGoodReadsChoice = models.BooleanField(null=True, blank=True)
+    publishedDate = models.DateField(null=True, blank=True)
+    category_name = models.CharField(max_length=255)
 
     def __str__(self):
         return f"{self.title} by {self.author}"
