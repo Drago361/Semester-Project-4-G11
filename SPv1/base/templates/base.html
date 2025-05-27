@@ -7,6 +7,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'base/register.css' %}">
+    <link rel="stylesheet" href="{% static 'base/faq.css' %}">
+    <link rel="stylesheet" href="{% static 'base/login.css' %}">
+    <link rel="stylesheet" href="{% static 'base/privacy.css' %}">
+    <link rel="stylesheet" href="{% static 'base/profile.css' %}">
+    <link rel="stylesheet" href="{% static 'base/register.css' %}">
+    <link rel="stylesheet" href="{% static 'base/terms.css' %}">
     <title>BookFind - Search for Books</title>
 </head>
 <body>
@@ -15,14 +22,11 @@
             <div class="logo">BookFind</div>
             <div class="main-nav-links">
                 <a href="{% url 'home' %}" class="active">Home</a>
-                <a href="#about">About</a>
-                <a href="#team">Team</a>
-                <a href="#contact">Contact</a>
             </div>
             <div class="user-nav-links">
                 <!-- These links will be hidden when user is logged in -->
-                <a href="login.html" class="login-btn" id="login-btn">Login</a>
-                <a href="register.html" class="register-btn" id="register-btn">Register</a>
+                <a href="{% url 'login' %}" class="login-btn" id="login-btn">Login</a>
+                <a href="{% url 'register' %}" class="register-btn" id="register-btn">Register</a>
                 
                 <!-- This will be shown when user is logged in -->
                 <a href="profile.html" class="profile-btn" id="profile-btn" style="display:none;">

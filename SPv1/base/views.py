@@ -18,3 +18,14 @@ def privacy(request):
 
 def placeholder(request):
     return render(HttpResponse("This is a placeholder view."))
+
+def profile(request):
+    return render(request, "base/profile.html", {
+        'user': request.user
+    })
+
+def login(request):
+    return render(request, "base/login.html")
+
+def register(request):
+    return render(request, "base/register.html")

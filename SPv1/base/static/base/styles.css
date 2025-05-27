@@ -475,3 +475,16 @@ order: 1;
 margin-top: 10px;
 }
 }
+
+.sort-container {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+}
+
+.sort-dropdown {
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: inherit;
+}
