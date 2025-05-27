@@ -1,7 +1,36 @@
 from django.contrib import admin
-from base.models import Book, Author
+from import_export import resources
+from import_export.admin import ImportExportModelAdmin
+from base.models import Book
+from import_export import resources
 
-admin.site.register(Book)
-admin.site.register(Author)
+def before_import(self, dataset, **kwargs):
+    super().before_import(dataset, **kwargs)
+    dataset.append_col([None] * len(dataset), header='id')
+
+class BookResource(resources.ModelResource):
+
+    class Meta:
+        model = Book  # or 'core.Book'
+        import_id_fields = ('asin',)
+        fields = (
+            'asin', 'title', 'author', 'soldBy', 'imgUrl', 'productURL',
+            'stars', 'reviews', 'price', 'isKindleUnlimited',
+            'category_id', 'isBestSeller', 'isEditorsPick',
+            'isGoodReadsChoice', 'publishedDate', 'category_name')
+
+def before_import(self, dataset, **kwargs):
+    super().before_import(dataset, **kwargs)
+    dataset.append_col([None] * len(dataset), header='id')
+
+
+
+@admin.register(Book)
+class BookAdmin(ImportExportModelAdmin):
+    resource_classes = [BookResource]
+
+
+#admin.site.register(Book)
+#admin.site.register(Author)
 
 # Register your models here.
