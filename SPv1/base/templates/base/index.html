@@ -17,6 +17,15 @@
                     </svg>
                 </button>
             </div>
+                <div class="sort-container" style="margin-top: 10px;">
+        <label for="sort-dropdown" style="margin-right: 8px;">Sort by:</label>
+        <select id="sort-dropdown" class="sort-dropdown">
+            <option value="relevance">Title</option>
+            <option value="author">Author</option>
+            <option value="rating">Genre</option>
+            <option value="rating">Rating</option>
+        </select>
+        </div>
             <div class="quick-suggestions">
                 <div class="suggestion">Fiction</div>
                 <div class="suggestion">Science Fiction</div>
@@ -75,7 +84,7 @@
             <h2 class="section-title">Our Team</h2>
             <div class="team-grid">
                 <div class="team-member">
-                    <div class="member-image">Photo</div>
+                    <div class="member-image"><img class="member-image" src="{% static 'img/Drugies.jpg' %}"></div>
                     <div class="member-name">Timothy Canev</div>
                     <div class="member-role">Front-End</div>
                     <p>Worked on the website front Front-End</p>
@@ -84,31 +93,31 @@
                     <div class="member-image">Photo</div>
                     <div class="member-name">Levente Sohár</div>
                     <div class="member-role">Algorithms</div>
-                    <p>Responsible for making Algorithms work</p>
+                    <p>Responsible for logic and testing</p>
                 </div>
                 <div class="team-member">
-                    <div class="member-image">Photo</div>
+                    <div class="member-image"><img class="member-image" src="{% static 'img/Rokas.jpg' %}"></div>
                     <div class="member-name">Rokas Norbutas</div>
                     <div class="member-role">Algorithms</div>
-                    <p>Responsible for making Algorithms work</p>
+                    <p>Responsible for logic and testing</p>
                 </div>
                 <div class="team-member">
                     <div class="member-image">Photo</div>
                     <div class="member-name">Tea Boian</div>
                     <div class="member-role">BackEnd development</div>
-                    <p>Worked on the back end functionality.</p>
+                    <p>Worked on the back end functionality</p>
                 </div>
                 <div class="team-member">
-                    <div class="member-image">Photo</div>
+                    <div class="member-image"><img class="member-image" src="{% static 'img/Alex.jpg' %}"></div>
                     <div class="member-name">Aleks Sergeev Florov</div>
                     <div class="member-role">BackEnd development</div>
-                    <p>Worked on the back end functionality..</p>
+                    <p>Worked on the back end functionality</p>
                 </div>
                 <div class="team-member">
                     <div class="member-image">Photo</div>
                     <div class="member-name">Petar Dreznjak</div>
-                    <div class="member-role">BackEnd development</div>
-                    <p>Worked on the back end functionality.</p>
+                    <div class="member-role">Algorithms</div>
+                    <p>Responsible for logic and testing</p>
                 </div>
             </div>
         </section>
