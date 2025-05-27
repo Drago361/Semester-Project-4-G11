@@ -36,21 +36,8 @@
                             </div>
                         </div>
                         <button type="submit" class="login-submit-btn">Sign In</button>
-                        <div class="social-login">
-                            <span class="divider">or continue with</span>
-                            <div class="social-buttons">
-                                <button type="button" class="social-btn google">
-                                    <i class="fab fa-google"></i>
-                                    <span>Google</span>
-                                </button>
-                                <button type="button" class="social-btn facebook">
-                                    <i class="fab fa-facebook-f"></i>
-                                    <span>Facebook</span>
-                                </button>
-                            </div>
-                        </div>
                         <div class="form-footer">
-                            Don't have an account? <a href="register.html">Sign up</a>
+                            Don't have an account? <a href="{% url 'register' %}">Sign up</a>
                         </div>
                     </form>
                 </div>
