@@ -1,7 +1,19 @@
 from django.contrib import admin
-from base.models import Book, Author
+from import_export import resources
+from import_export.admin import ImportExportModelAdmin
+from base.models import Book
 
-admin.site.register(Book)
-admin.site.register(Author)
+class BookResource(resources.ModelResource):
+
+    class Meta:
+        model = Book  # or 'core.Book'
+
+@admin.register(Book)
+class BookAdmin(ImportExportModelAdmin):
+    resource_classes = [BookResource]
+
+
+#admin.site.register(Book)
+#admin.site.register(Author)
 
 # Register your models here.
