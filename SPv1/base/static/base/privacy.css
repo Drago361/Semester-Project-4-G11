@@ -1,0 +1,111 @@
+.page-title {
+    font-size: 36px;
+    font-weight: bold;
+    text-align: center;
+    margin: 50px 0 20px;
+    color: #3a86ff;
+}
+
+.privacy-section {
+    padding: 30px 0 100px;
+}
+
+.privacy-content {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.last-updated {
+    text-align: right;
+    color: #6c757d;
+    font-style: italic;
+    margin-bottom: 30px;
+}
+
+.policy-section {
+    margin-bottom: 30px;
+}
+
+.policy-section h2 {
+    color: #3a86ff;
+    font-size: 22px;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.policy-section p {
+    margin-bottom: 15px;
+    line-height: 1.6;
+    color: #333;
+}
+
+.policy-section ul {
+    margin-left: 20px;
+    margin-bottom: 15px;
+}
+
+.policy-section li {
+    margin-bottom: 10px;
+    line-height: 1.6;
+}
+
+.policy-section strong {
+    font-weight: 600;
+    color: #333;
+}
+
+.contact-details {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+.contact-details p {
+    margin-bottom: 5px;
+}
+
+.policy-navigation {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+.nav-button {
+    display: inline-block;
+    background-color: #3a86ff;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    font-weight: 500;
+}
+
+.nav-button:hover {
+    background-color: #2563eb;
+}
+
+.nav-links a.active {
+    color: #3a86ff;
+    font-weight: bold;
+}
+
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 28px;
+        margin: 30px 0 10px;
+    }
+    
+    .privacy-content {
+        padding: 20px;
+    }
+    
+    .policy-section h2 {
+        font-size: 20px;
+    }
+}

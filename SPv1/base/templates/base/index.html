@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'base/styles.css' %}">
+
+{% block content %}
+<body>
+<html>
+    <main>
+        <section id="home" class="search-section container">
+            <div class="search-logo">BookFind</div>
+            <div class="search-container">
+                <input type="text" id="search-input" class="search-input" placeholder="Search for books...">
+                <button id="search-button" class="search-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </button>
+            </div>
+                <div class="sort-container" style="margin-top: 10px;">
+        <label for="sort-dropdown" style="margin-right: 8px;">Sort by:</label>
+        <select id="sort-dropdown" class="sort-dropdown">
+            <option value="relevance">Title</option>
+            <option value="author">Author</option>
+            <option value="rating">Genre</option>
+            <option value="rating">Rating</option>
+        </select>
+        </div>
+            <div class="quick-suggestions">
+                <div class="suggestion">Fiction</div>
+                <div class="suggestion">Science Fiction</div>
+                <div class="suggestion">Mystery</div>
+                <div class="suggestion">J.K. Rowling</div>
+                <div class="suggestion">Stephen King</div>
+                <div class="suggestion">Best Sellers</div>
+            </div>
+        </section>
+        
+        <section class="results-section container">
+            <!-- Sample book cards that will be shown initially -->
+            <div class="book-card">
+                <div class="book-cover">Book Cover</div>
+                <div class="book-title">The Great Gatsby</div>
+                <div class="book-author">F. Scott Fitzgerald</div>
+                <div class="book-description">A classic novel about the American Dream and its corruption in the 1920s. The story follows Jay Gatsby and his pursuit of wealth and love in the Jazz Age.</div>
+            </div>
+            <div class="book-card">
+                <div class="book-cover">Book Cover</div>
+                <div class="book-title">To Kill a Mockingbird</div>
+                <div class="book-author">Harper Lee</div>
+                <div class="book-description">A powerful examination of racism and moral growth in the American South during the 1930s, told through the eyes of a young girl named Scout Finch.</div>
+            </div>
+            <div class="book-card">
+                <div class="book-cover">Book Cover</div>
+                <div class="book-title">1984</div>
+                <div class="book-author">George Orwell</div>
+                <div class="book-description">A dystopian social science fiction novel that explores the consequences of totalitarianism, mass surveillance, and repressive regimentation.</div>
+            </div>
+            <div class="book-card">
+                <div class="book-cover">Book Cover</div>
+                <div class="book-title">Pride and Prejudice</div>
+                <div class="book-author">Jane Austen</div>
+                <div class="book-description">A romantic novel of manners that follows the character development of Elizabeth Bennet as she learns about the repercussions of hasty judgments.</div>
+            </div>
+        </section>
+        
+        <section id="about" class="about-section">
+            <div class="container">
+                <h2 class="section-title">About BookFind</h2>
+                <div class="about-content">
+                    <div class="about-text">
+                        <p>BookFind is your ultimate destination for discovering new books and expanding your literary horizons. Our platform makes it easy to search for books by title, author, genre, or keywords, helping you find your next great read.</p>
+                        <br>
+                        <p>Founded in 2025, BookFind has helped thousands of readers discover books they love. Our mission is to connect readers with books that inspire, educate, and entertain.</p>
+                        <br>
+                        <p>Whether you're looking for the latest bestseller, a classic novel, or an obscure title, BookFind has you covered with our comprehensive database and user-friendly search tools.</p>
+                    </div>
+                    <div class="about-image"><img src="{% static 'img/book.jpg' %}" alt="a book"></div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="team" class="team-section container">
+            <h2 class="section-title">Our Team</h2>
+            <div class="team-grid">
+                <div class="team-member">
+                    <div class="member-image"><img class="member-image" src="{% static 'img/Drugies.jpg' %}"></div>
+                    <div class="member-name">Timothy Canev</div>
+                    <div class="member-role">Front-End</div>
+                    <p>Worked on the website front Front-End</p>
+                </div>
+                <div class="team-member">
+                    <div class="member-image">Photo</div>
+                    <div class="member-name">Levente Sohár</div>
+                    <div class="member-role">Algorithms</div>
+                    <p>Responsible for logic and testing</p>
+                </div>
+                <div class="team-member">
+                    <div class="member-image"><img class="member-image" src="{% static 'img/Rokas.jpg' %}"></div>
+                    <div class="member-name">Rokas Norbutas</div>
+                    <div class="member-role">Algorithms</div>
+                    <p>Responsible for logic and testing</p>
+                </div>
+                <div class="team-member">
+                    <div class="member-image">Photo</div>
+                    <div class="member-name">Tea Boian</div>
+                    <div class="member-role">BackEnd development</div>
+                    <p>Worked on the back end functionality</p>
+                </div>
+                <div class="team-member">
+                    <div class="member-image"><img class="member-image" src="{% static 'img/Alex.jpg' %}"></div>
+                    <div class="member-name">Aleks Sergeev Florov</div>
+                    <div class="member-role">BackEnd development</div>
+                    <p>Worked on the back end functionality</p>
+                </div>
+                <div class="team-member">
+                    <div class="member-image">Photo</div>
+                    <div class="member-name">Petar Dreznjak</div>
+                    <div class="member-role">Algorithms</div>
+                    <p>Responsible for logic and testing</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="contact" class="contact-section">
+            <div class="container">
+                <h2 class="section-title">Contact Us</h2>
+                <div class="contact-container">
+                    <div class="contact-info">
+                        <div class="info-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div>
+                                <h3>Location</h3>
+                                <p>Alsion 2, 6400 Sonderborg, Denmark</p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-envelope"></i>
+                            <div>
+                                <h3>Email</h3>
+                                <p>info@bookfind.com</p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-phone"></i>
+                            <div>
+                                <h3>Phone</h3>
+                                <p>+45 8888 7777</p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-clock"></i>
+                            <div>
+                                <h3>Hours</h3>
+                                <p>Monday - Friday: 9am - 5pm</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="contact-map">
+                        <iframe 
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2304.4474485525304!2d9.786301076613118!3d54.91151597786262!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47b339b825187883%3A0x75dd72b2fc5f4b8f!2sAlsion%202%2C%206400%20S%C3%B8nderborg!5e0!3m2!1sen!2sdk!4v1712012406909!5m2!1sen!2sdk" 
+                            width="100%" 
+                            height="100%" 
+                            style="border:0;" 
+                            allowfullscreen="" 
+                            loading="lazy" 
+                            referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+</body>
+</html>
+{% endblock %}
