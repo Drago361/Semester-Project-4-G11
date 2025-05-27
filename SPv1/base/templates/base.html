@@ -1,5 +1,5 @@
 {% load static %}
-    <link rel="stylesheet" href="{% static 'base/styles.css' %}">
+    <link rel="stylesheet" href="{% static '/base/styles.css' %}">
 
 <!DOCTYPE html>
 <html lang="en">
@@ -12,12 +12,25 @@
 <body>
     <header>
         <nav>
-            <div class ="logo">BookFind</div>
+            <div class="logo">BookFind</div>
             <div class="main-nav-links">
-                <a href="{% url 'home' %}">Home</a>
+                <a href="{% url 'home' %}" class="active">Home</a>
                 <a href="#about">About</a>
                 <a href="#team">Team</a>
                 <a href="#contact">Contact</a>
+            </div>
+            <div class="user-nav-links">
+                <!-- These links will be hidden when user is logged in -->
+                <a href="login.html" class="login-btn" id="login-btn">Login</a>
+                <a href="register.html" class="register-btn" id="register-btn">Register</a>
+                
+                <!-- This will be shown when user is logged in -->
+                <a href="profile.html" class="profile-btn" id="profile-btn" style="display:none;">
+                    <i class="fas fa-user-circle"></i> My Profile
+                </a>
+                <a href="#" class="logout-btn" id="logout-btn" style="display:none;">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
             </div>
             <div class="secondary-nav-links">
                 <a href="{% url 'faq' %}">FAQ</a>
