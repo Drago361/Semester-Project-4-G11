@@ -1,8 +1,8 @@
-from django.shortcuts import render
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.contrib.auth.models import User
 from .models import *
 
@@ -55,8 +55,8 @@ def register_page(request):
         user.save()
 
         login(request, user)
-        messages.success(request, "Registration successful!")
-        return redirect('base/index.html')
+        messages.success(request, ("Registration successful!"))
+        return redirect('authentication/profile.html')
 
     return render(request, 'authentication/register.html')
 
@@ -65,3 +65,7 @@ def profile_page(request):
     return render(request, 'authentication/profile.html', {
         'user': request.user  # Django injects this automatically, but explicit is okay
     })
+
+def logout_view(request):
+    logout(request)
+    return render(request, 'authentication/login.html')
