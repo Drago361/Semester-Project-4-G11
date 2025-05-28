@@ -24,15 +24,30 @@
                 <a href="{% url 'home' %}" class="active">Home</a>
             </div>
             <div class="user-nav-links">
-                <!-- These links will be hidden when user is logged in -->
+                <!-- These links will be hidden when user is NOT logged in -->
                 <a href="{% url 'login' %}" class="login-btn" id="login-btn">Login</a>
                 <a href="{% url 'register' %}" class="register-btn" id="register-btn">Register</a>
-                
-                <!-- This will be shown when user is logged in -->
-                <a href="profile.html" class="profile-btn" id="profile-btn" style="display:none;">
-                    <i class="fas fa-user-circle"></i> My Profile
+            </div>
+            <div class="secondary-nav-links">
+                <a href="{% url 'faq' %}">FAQ</a>
+                <a href="{% url 'privacy' %}">Privacy</a>
+                <a href="{% url 'terms' %}">Terms</a>
+            </div>
+        </nav>
+    </header>
+
+        <header>
+        <nav>
+            <!-- These links will be hidden when user is IS logged in -->
+            <div class="logo">BookFind</div>
+            <div class="main-nav-links">
+                <a href="{% url 'home' %}" class="active">Home</a>
+            </div>
+            <div class="user-nav-links">
+                <a href="{% url 'profile' %}" class="profile-btn">
+                    <i class="fas fa-user-circle"></i> Profile
                 </a>
-                <a href="#" class="logout-btn" id="logout-btn" style="display:none;">
+                <a href="" class="logout-btn">
                     <i class="fas fa-sign-out-alt"></i> Logout
                 </a>
             </div>
@@ -45,7 +60,7 @@
     </header>
 
     {% block content %}
-    {% endblock %} 
+    {% endblock %}
 
     <footer>
         <div class="container">

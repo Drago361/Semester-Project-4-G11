@@ -1,8 +1,9 @@
 {% load static %}
-    <link rel="stylesheet" href="{% static '/base/styles.css' %}">
+<link rel="stylesheet" href="{% static '/base/styles.css' %}">
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,36 +17,45 @@
     <link rel="stylesheet" href="{% static 'base/terms.css' %}">
     <title>BookFind - Search for Books</title>
 </head>
+
 <body>
     <header>
         <nav>
             <div class="logo">BookFind</div>
+
             <div class="main-nav-links">
-                <a href="{% url 'home' %}" class="active">Home</a>
+                <a href="{% url 'home' %}" class="nav-link active">Home</a>
             </div>
+
             <div class="user-nav-links">
-                <!-- These links will be hidden when user is logged in -->
-                <a href="{% url 'login' %}" class="login-btn" id="login-btn">Login</a>
-                <a href="{% url 'register' %}" class="register-btn" id="register-btn">Register</a>
-                
-                <!-- This will be shown when user is logged in -->
-                <a href="profile.html" class="profile-btn" id="profile-btn" style="display:none;">
-                    <i class="fas fa-user-circle"></i> My Profile
+                {% if user.is_authenticated %}
+                <!-- Logged-in user options -->
+                <a href="{% url 'authentication:profile_page' %}" class="nav-link profile-btn">
+                    <i class="fas fa-user-circle"></i> Profile
                 </a>
-                <a href="#" class="logout-btn" id="logout-btn" style="display:none;">
+                <a href="{% url 'authentication:logout' %}" class="nav-link logout-btn">
                     <i class="fas fa-sign-out-alt"></i> Logout
                 </a>
+                {% else %}
+                <!-- Guest user options -->
+                <a href="{% url 'authentication:login_page' %}" class="nav-link login-btn">Login</a>
+                <a href="{% url 'authentication:register_page' %}" class="nav-link register-btn">Register</a>
+                {% endif %}
             </div>
+
             <div class="secondary-nav-links">
-                <a href="{% url 'faq' %}">FAQ</a>
-                <a href="{% url 'privacy' %}">Privacy</a>
-                <a href="{% url 'terms' %}">Terms</a>
+                <a href="{% url 'faq' %}" class="nav-link">FAQ</a>
+                <a href="{% url 'privacy' %}" class="nav-link">Privacy</a>
+                <a href="{% url 'terms' %}" class="nav-link">Terms</a>
             </div>
         </nav>
     </header>
 
+
+
+
     {% block content %}
-    {% endblock %} 
+    {% endblock %}
 
     <footer>
         <div class="container">
@@ -57,6 +67,7 @@
             <p>&copy; 2025 BookFind. All rights reserved.</p>
         </div>
     </footer>
-    <script src="js/script.js"></script>
+    <!-- <script src="js/script.js"></script> -->
 </body>
+
 </html>
