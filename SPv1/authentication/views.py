@@ -26,14 +26,14 @@ def login_page(request):
 
 def register_page(request):
     if request.method == 'POST':
-        full_name = request.POST.get('fullname')
+        fullname = request.POST.get('fullname')
         email = request.POST.get('email')
         username = request.POST.get('username')
         password = request.POST.get('password')
         terms_agreed = request.POST.get('terms')
 
         #validation 
-        if not all([full_name, email, username, password, terms_agreed]):
+        if not all([fullname, email, username, password, terms_agreed]):
             messages.error(request, "Please fill in all fields and accept the terms.")
             return render(request, 'authentication/register.html')
 
@@ -46,24 +46,20 @@ def register_page(request):
             return render(request, 'authentication/register.html')
 
         #user creation
-        user = User.objects.create_user(
-            username=username,
-            email=email,
-            password=password
-        )
-        user.first_name = full_name
+        user = User.objects.create_user(username=username, email=email, password=password)
+        user.first_name = fullname  
         user.save()
 
         login(request, user)
         messages.success(request, ("Registration successful!"))
-        return redirect('authentication/profile.html')
+        return render(request, 'authentication/profile.html')
 
     return render(request, 'authentication/register.html')
 
 @login_required
 def profile_page(request):
     return render(request, 'authentication/profile.html', {
-        'user': request.user  # Django injects this automatically, but explicit is okay
+        'user': request.user  
     })
 
 def logout_view(request):
