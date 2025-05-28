@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'base/login.css' %}">
+<link rel="stylesheet" href="{% static 'base/styles.css' %}">
+
+{% block content %}
+<main>
+    <section class="login-section container">
+        <div class="login-container">
+            <div class="login-image">
+                <div class="welcome-text">
+                    <h2>Welcome Back!</h2>
+                    <p>Sign in to access your personalized reading recommendations, track your reading progress, and
+                        connect with fellow book lovers.</p>
+                </div>
+            </div>
+            <div class="login-form-container">
+                <h1 class="form-title">Sign In</h1>
+                <form id="login-form" class="login-form" method="post" action="{% url 'login' %}">
+                    <form id="login-form" class="login-form" method="post"
+                        action="{% url 'login' %}">
+                        {% csrf_token %}
+
+                        {% if messages %}
+                        <ul class="messages">
+                            {% for message in messages %}
+                            <li class="{{ message.tags }}">{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+
+                        <div class="form-group">
+                            <label for="username">Email or Username</label>
+                            <input type="text" id="username" name="username" placeholder="Enter your email or username"
+                                required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <div class="password-container">
+                                <input type="password" id="password" name="password" placeholder="Enter your password"
+                                    required>
+                                <i class="fas fa-eye toggle-password"></i>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="login-submit-btn">Sign In</button>
+                    </form>
+
+                </form>
+            </div>
+        </div>
+    </section>
+</main>
+<script src="{% static 'js/login.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,580 @@
+{% extends "base.html" %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'base/profile.css' %}">
+<link rel="stylesheet" href="{% static 'base/styles.css' %}">
+
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<main>
+    <div class="container">
+        <section class="profile-header">
+            <div class="profile-cover"></div>
+            <div class="profile-avatar">
+                <img src="/api/placeholder/150/150" alt="Profile Avatar" id="profile-avatar">
+                <button class="edit-avatar-btn">
+                    <i class="fas fa-camera"></i>
+                </button>
+            </div>
+            <div class="profile-info">
+                <h1 id="profile-name">{{ user.first_name }}</h1>
+                <p id="profile-username">@{{ user.username }}</p>
+
+                <p id="profile-bio">Your personal bio will appear here. Tell us about yourself and your reading
+                    preferences.</p>
+            </div>
+            <div class="profile-stats">
+                <div class="stat">
+                    <span class="stat-number" id="books-read">0</span>
+                    <span class="stat-label">Books Read</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number" id="reviews">0</span>
+                    <span class="stat-label">Reviews</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number" id="followers">0</span>
+                    <span class="stat-label">Followers</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number" id="following">0</span>
+                    <span class="stat-label">Following</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="profile-tabs">
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="reading">
+                    <i class="fas fa-book"></i> Recommendation List
+                </button>
+                <button class="tab-btn" data-tab="library">
+                    <i class="fas fa-bookmark"></i> My Favorites
+                </button>
+                <button class="tab-btn" data-tab="content-similarity" id="content-similarity-btn">
+                    <i class="fas fa-project-diagram"></i> Content Similarity
+                </button>
+                <button class="tab-btn" data-tab="graph-recommendation" id="graph-recommendation-btn">
+                    <i class="fas fa-chart-line"></i> Top Rated Books
+                </button>
+                <button class="tab-btn" data-tab="settings">
+                    <i class="fas fa-cog"></i> Settings
+                </button>
+            </div>
+
+            <div class="tab-content active" id="reading-tab">
+                <div class="tab-header">
+                    <h2>My Recommendations</h2>
+                    <button class="action-btn">
+                        <i class="fas fa-plus"></i> Add Book
+                    </button>
+                </div>
+
+                <div class="book-list" id="reading-list">
+                    <div class="empty-state">
+                        <i class="fas fa-book-reader"></i>
+                        <h3>Your reading list is empty</h3>
+                        <p>Books you plan to read will appear here.</p>
+                        <button class="action-btn">Browse Books</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="library-tab">
+                <div class="tab-header">
+                    <h2>My Favorites</h2>
+                    <div class="filter-options">
+                    </div>
+                </div>
+
+                <div class="book-grid" id="library-list">
+                    <!-- Sample book cards - these will be replaced with dynamic content -->
+                    <div class="book-card">
+                        <div class="book-cover">Book Cover</div>
+                        <div class="book-title">The Great Gatsby</div>
+                        <div class="book-author">F. Scott Fitzgerald</div>
+                        <div class="book-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </div>
+                        <div class="book-action">
+                            <button class="book-action-btn"><i class="fas fa-heart"></i></button>
+                            <button class="book-action-btn"><i class="fas fa-comment"></i></button>
+                            <button class="book-action-btn"><i class="fas fa-share"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="book-card">
+                        <div class="book-cover">Book Cover</div>
+                        <div class="book-title">To Kill a Mockingbird</div>
+                        <div class="book-author">Harper Lee</div>
+                        <div class="book-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <div class="book-action">
+                            <button class="book-action-btn"><i class="fas fa-heart"></i></button>
+                            <button class="book-action-btn"><i class="fas fa-comment"></i></button>
+                            <button class="book-action-btn"><i class="fas fa-share"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="content-similarity-tab">
+                <div class="tab-header">
+                    <h2>Content Similarity Recommendations</h2>
+                    <div class="filter-options">
+                        <select id="similarity-type">
+                            <option value="content">Content-Based</option>
+                            <option value="genre">Genre Similarity</option>
+                            <option value="author">Author Similarity</option>
+                            <option value="theme">Theme Similarity</option>
+                        </select>
+                        <button class="action-btn" id="refresh-similarity">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+
+                <div class="similarity-section">
+                    <div class="similarity-header">
+                        <h3>Based on your reading history</h3>
+                        <p>Books similar to ones you've enjoyed</p>
+                    </div>
+
+                    <div class="book-grid" id="similarity-list">
+                        <div class="book-card similarity-card">
+                            <div class="book-cover">Book Cover</div>
+                            <div class="book-title">1984</div>
+                            <div class="book-author">George Orwell</div>
+                            <div class="similarity-match">
+                                <span class="match-percentage">94% Match</span>
+                                <div class="match-reasons">
+                                    <span class="reason-tag">Dystopian</span>
+                                    <span class="reason-tag">Political</span>
+                                </div>
+                            </div>
+                            <div class="book-rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="book-action">
+                                <button class="book-action-btn"><i class="fas fa-plus"></i> Add to List</button>
+                                <button class="book-action-btn"><i class="fas fa-info-circle"></i> Details</button>
+                            </div>
+                        </div>
+
+                        <div class="book-card similarity-card">
+                            <div class="book-cover">Book Cover</div>
+                            <div class="book-title">Brave New World</div>
+                            <div class="book-author">Aldous Huxley</div>
+                            <div class="similarity-match">
+                                <span class="match-percentage">91% Match</span>
+                                <div class="match-reasons">
+                                    <span class="reason-tag">Dystopian</span>
+                                    <span class="reason-tag">Social Commentary</span>
+                                </div>
+                            </div>
+                            <div class="book-rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </div>
+                            <div class="book-action">
+                                <button class="book-action-btn"><i class="fas fa-plus"></i> Add to List</button>
+                                <button class="book-action-btn"><i class="fas fa-info-circle"></i> Details</button>
+                            </div>
+                        </div>
+
+                        <div class="book-card similarity-card">
+                            <div class="book-cover">Book Cover</div>
+                            <div class="book-title">Fahrenheit 451</div>
+                            <div class="book-author">Ray Bradbury</div>
+                            <div class="similarity-match">
+                                <span class="match-percentage">88% Match</span>
+                                <div class="match-reasons">
+                                    <span class="reason-tag">Dystopian</span>
+                                    <span class="reason-tag">Censorship</span>
+                                </div>
+                            </div>
+                            <div class="book-rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <div class="book-action">
+                                <button class="book-action-btn"><i class="fas fa-plus"></i> Add to List</button>
+                                <button class="book-action-btn"><i class="fas fa-info-circle"></i> Details</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="graph-recommendation-tab">
+                <div class="tab-header">
+                    <h2>Top Rated Books</h2>
+                    <div class="filter-options">
+                        <select id="rating-filter">
+                            <option value="all">All Categories</option>
+                            <option value="fiction">Fiction</option>
+                            <option value="non-fiction">Non-Fiction</option>
+                            <option value="mystery">Mystery</option>
+                            <option value="sci-fi">Science Fiction</option>
+                            <option value="fantasy">Fantasy</option>
+                            <option value="romance">Romance</option>
+                        </select>
+                        <select id="time-filter">
+                            <option value="all-time">All Time</option>
+                            <option value="this-year">This Year</option>
+                            <option value="this-month">This Month</option>
+                            <option value="last-week">Last Week</option>
+                        </select>
+                        <button class="action-btn" id="refresh-top-rated">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+
+                <div class="top-rated-section">
+                    <div class="ranking-header">
+                        <h3>Highest Rated Books</h3>
+                        <p>Based on community ratings and reviews</p>
+                    </div>
+
+                    <div class="book-ranking-list" id="top-rated-list">
+                        <div class="book-ranking-item">
+                            <div class="ranking-number">1</div>
+                            <div class="book-cover-small">Cover</div>
+                            <div class="book-details">
+                                <div class="book-title">The Lord of the Rings</div>
+                                <div class="book-author">J.R.R. Tolkien</div>
+                                <div class="book-meta">
+                                    <span class="genre">Fantasy</span>
+                                    <span class="publication-year">1954</span>
+                                </div>
+                            </div>
+                            <div class="rating-info">
+                                <div class="rating-score">4.9</div>
+                                <div class="rating-stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <div class="rating-count">2.5M ratings</div>
+                            </div>
+                            <div class="book-actions">
+                                <button class="book-action-btn primary"><i class="fas fa-plus"></i> Add</button>
+                                <button class="book-action-btn"><i class="fas fa-info-circle"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="book-ranking-item">
+                            <div class="ranking-number">2</div>
+                            <div class="book-cover-small">Cover</div>
+                            <div class="book-details">
+                                <div class="book-title">To Kill a Mockingbird</div>
+                                <div class="book-author">Harper Lee</div>
+                                <div class="book-meta">
+                                    <span class="genre">Fiction</span>
+                                    <span class="publication-year">1960</span>
+                                </div>
+                            </div>
+                            <div class="rating-info">
+                                <div class="rating-score">4.8</div>
+                                <div class="rating-stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <div class="rating-count">3.2M ratings</div>
+                            </div>
+                            <div class="book-actions">
+                                <button class="book-action-btn primary"><i class="fas fa-plus"></i> Add</button>
+                                <button class="book-action-btn"><i class="fas fa-info-circle"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="book-ranking-item">
+                            <div class="ranking-number">3</div>
+                            <div class="book-cover-small">Cover</div>
+                            <div class="book-details">
+                                <div class="book-title">Pride and Prejudice</div>
+                                <div class="book-author">Jane Austen</div>
+                                <div class="book-meta">
+                                    <span class="genre">Romance</span>
+                                    <span class="publication-year">1813</span>
+                                </div>
+                            </div>
+                            <div class="rating-info">
+                                <div class="rating-score">4.7</div>
+                                <div class="rating-stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <div class="rating-count">2.8M ratings</div>
+                            </div>
+                            <div class="book-actions">
+                                <button class="book-action-btn primary"><i class="fas fa-plus"></i> Add</button>
+                                <button class="book-action-btn"><i class="fas fa-info-circle"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="book-ranking-item">
+                            <div class="ranking-number">4</div>
+                            <div class="book-cover-small">Cover</div>
+                            <div class="book-details">
+                                <div class="book-title">The Catcher in the Rye</div>
+                                <div class="book-author">J.D. Salinger</div>
+                                <div class="book-meta">
+                                    <span class="genre">Fiction</span>
+                                    <span class="publication-year">1951</span>
+                                </div>
+                            </div>
+                            <div class="rating-info">
+                                <div class="rating-score">4.6</div>
+                                <div class="rating-stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                                <div class="rating-count">1.9M ratings</div>
+                            </div>
+                            <div class="book-actions">
+                                <button class="book-action-btn primary"><i class="fas fa-plus"></i> Add</button>
+                                <button class="book-action-btn"><i class="fas fa-info-circle"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="book-ranking-item">
+                            <div class="ranking-number">5</div>
+                            <div class="book-cover-small">Cover</div>
+                            <div class="book-details">
+                                <div class="book-title">Harry Potter and the Philosopher's Stone</div>
+                                <div class="book-author">J.K. Rowling</div>
+                                <div class="book-meta">
+                                    <span class="genre">Fantasy</span>
+                                    <span class="publication-year">1997</span>
+                                </div>
+                            </div>
+                            <div class="rating-info">
+                                <div class="rating-score">4.6</div>
+                                <div class="rating-stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                                <div class="rating-count">4.1M ratings</div>
+                            </div>
+                            <div class="book-actions">
+                                <button class="book-action-btn primary"><i class="fas fa-plus"></i> Add</button>
+                                <button class="book-action-btn"><i class="fas fa-info-circle"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="load-more-section">
+                        <button class="action-btn load-more-btn">
+                            <i class="fas fa-chevron-down"></i> Load More Books
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="settings-tab">
+                <div class="tab-header">
+                    <h2>Account Settings</h2>
+                    <button class="save-settings-btn" id="save-settings">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
+
+                <div class="settings-form">
+                    <form id="profile-settings-form">
+                        <div class="form-section">
+                            <h3>Profile Information</h3>
+
+                            <div class="form-group">
+                                <label for="fullname">Full Name</label>
+                                <input type="text" id="fullname" name="fullname" placeholder="Your full name">
+                            </div>
+                            <div class="form-group">
+                                <label for="username">Username</label>
+                                <input type="text" id="username" name="username" placeholder="Your username">
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email Address</label>
+                                <input type="email" id="email" name="email" placeholder="Your email address">
+                            </div>
+                            <div class="form-group">
+                                <label for="bio">Bio</label>
+                                <textarea id="bio" name="bio" rows="4"
+                                    placeholder="Tell us about yourself and your reading preferences"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3>Reading Preferences</h3>
+                            <div class="reading-preferences">
+                                <div class="genre-preference">
+                                    <label>Favorite Genres</label>
+                                    <div class="genre-options">
+                                        <div class="genre-option">
+                                            <input type="checkbox" id="fiction" name="genres" value="fiction">
+                                            <label for="fiction">Fiction</label>
+                                        </div>
+                                        <div class="genre-option">
+                                            <input type="checkbox" id="mystery" name="genres" value="mystery">
+                                            <label for="mystery">Mystery</label>
+                                        </div>
+                                        <div class="genre-option">
+                                            <input type="checkbox" id="sci-fi" name="genres" value="sci-fi">
+                                            <label for="sci-fi">Science Fiction</label>
+                                        </div>
+                                        <div class="genre-option">
+                                            <input type="checkbox" id="fantasy" name="genres" value="fantasy">
+                                            <label for="fantasy">Fantasy</label>
+                                        </div>
+                                        <div class="genre-option">
+                                            <input type="checkbox" id="romance" name="genres" value="romance">
+                                            <label for="romance">Romance</label>
+                                        </div>
+                                        <div class="genre-option">
+                                            <input type="checkbox" id="biography" name="genres" value="biography">
+                                            <label for="biography">Biography</label>
+                                        </div>
+                                        <div class="genre-option">
+                                            <input type="checkbox" id="history" name="genres" value="history">
+                                            <label for="history">History</label>
+                                        </div>
+                                        <div class="genre-option">
+                                            <input type="checkbox" id="poetry" name="genres" value="poetry">
+                                            <label for="poetry">Poetry</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3>Password</h3>
+                            <div class="form-group">
+                                <label for="current-password">Current Password</label>
+                                <div class="password-container">
+                                    <input type="password" id="current-password" name="current-password"
+                                        placeholder="Enter your current password">
+                                    <i class="fas fa-eye toggle-password"></i>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="new-password">New Password</label>
+                                <div class="password-container">
+                                    <input type="password" id="new-password" name="new-password"
+                                        placeholder="Enter your new password">
+                                    <i class="fas fa-eye toggle-password"></i>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="confirm-password">Confirm New Password</label>
+                                <div class="password-container">
+                                    <input type="password" id="confirm-password" name="confirm-password"
+                                        placeholder="Confirm your new password">
+                                    <i class="fas fa-eye toggle-password"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3>Notification Settings</h3>
+                            <div class="notification-options">
+                                <div class="notification-option">
+                                    <input type="checkbox" id="email-notifications" name="email-notifications" checked>
+                                    <label for="email-notifications">Email Notifications</label>
+                                </div>
+                                <div class="notification-option">
+                                    <input type="checkbox" id="newsletter" name="newsletter" checked>
+                                    <label for="newsletter">Weekly Newsletter</label>
+                                </div>
+                                <div class="notification-option">
+                                    <input type="checkbox" id="new-releases" name="new-releases" checked>
+                                    <label for="new-releases">New Releases in Favorite Genres</label>
+                                </div>
+                                <div class="notification-option">
+                                    <input type="checkbox" id="reading-reminders" name="reading-reminders">
+                                    <label for="reading-reminders">Reading Reminders</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section danger-zone">
+                            <h3>Danger Zone</h3>
+                            <button type="button" class="danger-btn" id="delete-account-btn">
+                                <i class="fas fa-exclamation-triangle"></i> Delete Account
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+
+<!-- Modal for delete account confirmation -->
+<div class="modal" id="delete-account-modal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <div class="modal-header">
+            <i class="fas fa-exclamation-triangle warning-icon"></i>
+            <h2>Delete Account</h2>
+        </div>
+        <div class="modal-body">
+            <p>Are you sure you want to delete your account? This action cannot be undone.</p>
+            <p>All your data, including your reading history and reviews, will be permanently deleted.</p>
+
+            <div class="form-group">
+                <label for="password-confirm">Enter your password to confirm:</label>
+                <div class="password-container">
+                    <input type="password" id="password-confirm" placeholder="Your password">
+                    <i class="fas fa-eye toggle-password"></i>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn cancel-btn" id="cancel-delete">Cancel</button>
+            <button class="modal-btn delete-btn" id="confirm-delete">Delete My Account</button>
+        </div>
+    </div>
+</div>
+
+<script src="js/profile.js"></script>
+</body>
+
+</html>
+
+{% endblock %}
