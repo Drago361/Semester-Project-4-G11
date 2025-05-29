@@ -9,7 +9,18 @@
         <section id="home" class="search-section container">
             <div class="search-logo">BookFind</div>
             <div class="search-container">
-                <input type="text" id="search-input" class="search-input" placeholder="Search for books...">
+                <input type="text" id="search-input" class="search-input" placeholder="Search for books..." autocomplete="off">
+                <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+                <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+                <script>
+                $(function(){
+                    $("#search-input").autocomplete({
+                        source: "/autocomplete/",
+                        minLength: 2,
+                    });
+                });
+                </script>
                 <button id="search-button" class="search-button">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="11" cy="11" r="8"></circle>
@@ -43,24 +54,28 @@
                 <div class="book-title">The Great Gatsby</div>
                 <div class="book-author">F. Scott Fitzgerald</div>
                 <div class="book-description">A classic novel about the American Dream and its corruption in the 1920s. The story follows Jay Gatsby and his pursuit of wealth and love in the Jazz Age.</div>
+                <button class="star-btn" title="Add to Favorites">&#9734;</button>
             </div>
             <div class="book-card">
                 <div class="book-cover">Book Cover</div>
                 <div class="book-title">To Kill a Mockingbird</div>
                 <div class="book-author">Harper Lee</div>
                 <div class="book-description">A powerful examination of racism and moral growth in the American South during the 1930s, told through the eyes of a young girl named Scout Finch.</div>
+                <button class="star-btn" title="Add to Favorites">&#9734;</button>
             </div>
             <div class="book-card">
                 <div class="book-cover">Book Cover</div>
                 <div class="book-title">1984</div>
                 <div class="book-author">George Orwell</div>
                 <div class="book-description">A dystopian social science fiction novel that explores the consequences of totalitarianism, mass surveillance, and repressive regimentation.</div>
+                <button class="star-btn" title="Add to Favorites">&#9734;</button>
             </div>
             <div class="book-card">
                 <div class="book-cover">Book Cover</div>
                 <div class="book-title">Pride and Prejudice</div>
                 <div class="book-author">Jane Austen</div>
                 <div class="book-description">A romantic novel of manners that follows the character development of Elizabeth Bennet as she learns about the repercussions of hasty judgments.</div>
+                <button class="star-btn" title="Add to Favorites">&#9734;</button>
             </div>
         </section>
         
@@ -174,4 +189,61 @@
     
 </body>
 </html>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const favoritesList = document.getElementById('favorites-list');
+    const starBtns = document.querySelectorAll('.star-btn');
+
+    // Store favorites in localStorage for demo
+    let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+
+    function updateFavoritesUI() {
+        favoritesList.innerHTML = '';
+        if (favorites.length === 0) {
+            favoritesList.innerHTML = '<p>No favorites yet.</p>';
+            return;
+        }
+        favorites.forEach(book => {
+            const card = document.createElement('div');
+            card.className = 'book-card';
+            card.innerHTML = `
+                <div class="book-cover">${book.cover}</div>
+                <div class="book-title">${book.title}</div>
+                <div class="book-author">${book.author}</div>
+                <div class="book-description">${book.description}</div>
+            `;
+            favoritesList.appendChild(card);
+        });
+    }
+
+    function addToFavorites(card) {
+        const book = {
+            cover: card.querySelector('.book-cover').innerHTML,
+            title: card.querySelector('.book-title').textContent,
+            author: card.querySelector('.book-author').textContent,
+            description: card.querySelector('.book-description').textContent
+        };
+        // Avoid duplicates
+        if (!favorites.some(f => f.title === book.title && f.author === book.author)) {
+            favorites.push(book);
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            updateFavoritesUI();
+        }
+    }
+
+    starBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const card = btn.closest('.book-card');
+            addToFavorites(card);
+            btn.innerHTML = '&#9733;'; // filled star
+            btn.classList.add('filled');
+        });
+    });
+
+    updateFavoritesUI();
+});
+</script>
+
 {% endblock %}

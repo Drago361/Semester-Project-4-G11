@@ -4,33 +4,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const suggestions = document.querySelectorAll('.suggestion');
     const resultsSection = document.querySelector('.results-section');
     
-    const bookDatabase = [
-        {
-            title: "The Midnight Library",
-            author: "Matt Haig",
-            description: "Between life and death there is a library filled with books that give you a chance to try another life you could have lived."
-        },
-        {
-            title: "Project Hail Mary",
-            author: "Andy Weir",
-            description: "A lone astronaut must save humanity from an extinction-level threat with only his ingenuity and science knowledge."
-        },
-        {
-            title: "The Song of Achilles",
-            author: "Madeline Miller",
-            description: "A retelling of the Trojan War from the perspective of Patroclus, companion and lover of the legendary warrior Achilles."
-        },
-        {
-            title: "A Court of Thorns and Roses",
-            author: "Sarah J. Maas",
-            description: "A fantasy novel that follows the journey of a huntress who is brought into the faerie realm as punishment for killing a wolf."
-        },
-        {
-            title: "The Hobbit",
-            author: "J.R.R. Tolkien",
-            description: "A fantasy novel about a hobbit who is swept into an epic quest to reclaim the dwarven kingdom from a fearsome dragon."
-        }
-    ];
     
     const searchLogo = document.querySelector('.search-logo');
     searchLogo.addEventListener('mouseover', function() {
@@ -57,24 +30,33 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     searchButton.addEventListener('click', function() {
-        const searchTerm = searchInput.value.trim().toLowerCase();
-        
+        const searchTerm = searchInput.value.trim();
         if (searchTerm === '') return;
-        
+
         while (resultsSection.firstChild) {
             resultsSection.removeChild(resultsSection.firstChild);
         }
-        
-        const numResults = Math.floor(Math.random() * 5) + 1;
-        
-        for (let i = 0; i < numResults; i++) {
-            const randomIndex = Math.floor(Math.random() * bookDatabase.length);
-            const book = bookDatabase[randomIndex];
-            
-            createBookCard(book, i * 100);
-        }
-        
-        resultsSection.scrollIntoView({ behavior: 'smooth' });
+
+        fetch(`/api/search_books_bst/?q=${encodeURIComponent(searchTerm)}`)
+            .then(response => response.json())
+            .then(data => {
+                const books = data.results;
+                if (books.length === 0) {
+                    resultsSection.innerHTML = '<p>No books found.</p>';
+                    return;
+                }
+                books.forEach((book, i) => {
+                    createBookCard({
+                        title: book.title,
+                        author: book.author,
+                        description: book.description || ''
+                    }, i * 100);
+                });
+                resultsSection.scrollIntoView({ behavior: 'smooth' });
+            })
+            .catch(() => {
+                resultsSection.innerHTML = '<p>Error searching for books.</p>';
+            });
     });
     
     searchInput.addEventListener('keypress', function(e) {
@@ -104,10 +86,38 @@ document.addEventListener('DOMContentLoaded', function() {
         bookDescription.className = 'book-description';
         bookDescription.textContent = book.description;
         
+            // --- Add star button ---
+            const starBtn = document.createElement('button');
+            starBtn.className = 'star-btn';
+            starBtn.title = 'Add to Favorites';
+            starBtn.innerHTML = '☆';
+        
+            // Check if already in favorites
+            let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+            if (favorites.some(f => f.title === book.title && f.author === book.author)) {
+                starBtn.innerHTML = '★';
+            }
+        
+            // Only allow favoriting if logged in
+            starBtn.addEventListener('click', function() {
+                if (!window.isAuthenticated) {
+                    alert('You must be logged in to favorite books.');
+                    return;
+                }
+                let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+                if (!favorites.some(f => f.title === book.title && f.author === book.author)) {
+                    favorites.push(book);
+                    localStorage.setItem('favorites', JSON.stringify(favorites));
+                    starBtn.innerHTML = '★';
+                }
+            });
+    
+        
         bookCard.appendChild(bookCover);
         bookCard.appendChild(bookTitle);
         bookCard.appendChild(bookAuthor);
         bookCard.appendChild(bookDescription);
+        bookCard.appendChild(starBtn);
         
         resultsSection.appendChild(bookCard);
         

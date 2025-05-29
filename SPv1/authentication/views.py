@@ -1,10 +1,14 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from .recommender import get_recommendations_by 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+from authentication.recommender import get_recommendations_by
 from django.contrib.auth.models import User
 from .models import *
+from django.http import JsonResponse
 
 
 def login_page(request):
@@ -65,3 +69,47 @@ def profile_page(request):
 def logout_view(request):
     logout(request)
     return render(request, 'authentication/login.html')
+
+def profile(request):
+    recommendations = []
+    message = ""
+
+    if request.method == 'POST' and 'recommend' in request.POST:
+        criteria = request.POST.get('criteria')
+        value = request.POST.get('value')
+
+        result = get_recommendations_by(criteria, value)
+        if isinstance(result, str):
+            message = result
+        else:
+            recommendations = result.to_dict(orient='records')
+
+    return render(request, 'authentication/profile.html', {
+        'recommendations': recommendations,
+        'message': message,
+    })
+
+@csrf_exempt
+def recommend_for_favorites(request):
+    import json
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        titles = [t.strip().lower() for t in data.get('titles', [])]
+        all_recs = []
+        seen = set()
+        for title in titles:
+            recs = get_recommendations_by('title', title)
+            if isinstance(recs, str):
+                continue
+            for _, row in recs.iterrows():
+                key = (row['title'], row['author'])
+                if key not in seen and row['title'] not in titles:
+                    all_recs.append({
+                        'title': row['title'],
+                        'author': row['author'],
+                        'stars': row['stars'],
+                        'isBestSeller': row['isBestSeller'],
+                    })
+                    seen.add(key)
+        return JsonResponse({'results': all_recs})
+    return JsonResponse({'results': []})

@@ -91,42 +91,8 @@
                 </div>
 
                 <div class="book-grid" id="library-list">
-                    <!-- Sample book cards - these will be replaced with dynamic content -->
-                    <div class="book-card">
-                        <div class="book-cover">Book Cover</div>
-                        <div class="book-title">The Great Gatsby</div>
-                        <div class="book-author">F. Scott Fitzgerald</div>
-                        <div class="book-rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="far fa-star"></i>
-                        </div>
-                        <div class="book-action">
-                            <button class="book-action-btn"><i class="fas fa-heart"></i></button>
-                            <button class="book-action-btn"><i class="fas fa-comment"></i></button>
-                            <button class="book-action-btn"><i class="fas fa-share"></i></button>
-                        </div>
-                    </div>
-
-                    <div class="book-card">
-                        <div class="book-cover">Book Cover</div>
-                        <div class="book-title">To Kill a Mockingbird</div>
-                        <div class="book-author">Harper Lee</div>
-                        <div class="book-rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star-half-alt"></i>
-                        </div>
-                        <div class="book-action">
-                            <button class="book-action-btn"><i class="fas fa-heart"></i></button>
-                            <button class="book-action-btn"><i class="fas fa-comment"></i></button>
-                            <button class="book-action-btn"><i class="fas fa-share"></i></button>
-                        </div>
-                    </div>
+                    <!--Deleted static books, favorites will be dynamically loaded from localStorage-->
+                    
                 </div>
             </div>
 
@@ -592,6 +558,102 @@
             document.getElementById(`${tabId}-tab`).classList.add('active');
         });
     });</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const libraryList = document.getElementById('library-list');
+    if (!libraryList) return;
+    libraryList.innerHTML = '';
+    let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    if (favorites.length === 0) {
+        libraryList.innerHTML = '<div class="empty-state"><i class="fas fa-book-reader"></i><h3>Your Favorites list is empty</h3></div>';
+        return;
+    }
+    favorites.forEach(book => {
+        const card = document.createElement('div');
+        card.className = 'book-card';
+        card.innerHTML = `
+            <div class="book-cover">Book Cover</div>
+            <div class="book-title">${book.title}</div>
+            <div class="book-author">${book.author}</div>
+            <div class="book-description">${book.description}</div>
+        `;
+        libraryList.appendChild(card);
+    });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const libraryList = document.getElementById('library-list');
+    if (!libraryList) return;
+    function renderFavorites() {
+        libraryList.innerHTML = '';
+        let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+        if (favorites.length === 0) {
+            libraryList.innerHTML = '<div class="empty-state"><i class="fas fa-book-reader"></i><h3>Your Favorites list is empty</h3></div>';
+            return;
+        }
+        favorites.forEach((book, idx) => {
+            const card = document.createElement('div');
+            card.className = 'book-card';
+            card.innerHTML = `
+                <div class="book-cover">Book Cover</div>
+                <div class="book-title">${book.title}</div>
+                <div class="book-author">${book.author}</div>
+                <div class="book-description">${book.description}</div>
+                <button class="star-btn filled" title="Remove from Favorites">&#9733;</button>
+            `;
+            // Unfavorite button
+            card.querySelector('.star-btn').addEventListener('click', function() {
+                let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+                favorites = favorites.filter(f => !(f.title === book.title && f.author === book.author));
+                localStorage.setItem('favorites', JSON.stringify(favorites));
+                renderFavorites();
+            });
+            libraryList.appendChild(card);
+        });
+    }
+    renderFavorites();
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const recList = document.getElementById('reading-list');
+    let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    if (favorites.length === 0) {
+        recList.innerHTML = `<div class="empty-state"><i class="fas fa-book-reader"></i><h3>Your Recommendation list is empty</h3><p>Recommendations will appear here.</p></div>`;
+        return;
+    }
+    const titles = favorites.map(book => book.title.trim().toLowerCase());
+    fetch('/api/recommend_for_favorites/', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({titles: titles})
+    })
+    .then(res => res.json())
+    .then(data => {
+        recList.innerHTML = '';
+        if (!data.results || data.results.length === 0) {
+            recList.innerHTML = `<div class="empty-state"><i class="fas fa-book-reader"></i><h3>No recommendations found</h3></div>`;
+            console.log("Recieved recommendations:", data);
+            return;
+        }
+        data.results.forEach(book => {
+            const card = document.createElement('div');
+            card.className = 'book-card';
+            card.innerHTML = `
+                <div class="book-cover">Book Cover</div>
+                <div class="book-title">${book.title}</div>
+                <div class="book-author">${book.author}</div>
+                <div class="book-description">Rating: ${book.stars || 'N/A'} | Bestseller: ${book.isBestSeller}</div>
+            `;
+            recList.appendChild(card);
+        });
+    });
+});
+</script>
+
 </body>
 
 </html>
