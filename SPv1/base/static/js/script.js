@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         
             // Only allow favoriting if logged in
-            starBtn.addEventListener('click', function() {
+           /* starBtn.addEventListener('click', function() {
                 if (!window.isAuthenticated) {
                     alert('You must be logged in to favorite books.');
                     return;
@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     localStorage.setItem('favorites', JSON.stringify(favorites));
                     starBtn.innerHTML = '★';
                 }
-            });
+            }); */
     
         
         bookCard.appendChild(bookCover);
