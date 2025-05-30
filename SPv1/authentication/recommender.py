@@ -1,128 +1,43 @@
+# recommender.py
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-from base.models import Book  
+from base.models import Book
 
-# Load data from SQLite database via Django ORM
 def load_books_from_db():
     qs = Book.objects.all().values(
         'title', 'author', 'stars', 'price', 'category_id', 'isBestSeller', 'category_name'
     )
     return pd.DataFrame(list(qs))
 
-# Prepare DataFrame and compute similarity
-df = load_books_from_db()
-df = df.head(4000)
+def get_recommendations_by(criteria, value):
+    df = load_books_from_db()
 
-# Clean and fill missing values
-for col in ['title', 'author', 'category_name', 'isBestSeller']:
-    df[col] = df[col].fillna('').astype(str)
+    for col in ['title', 'author', 'category_name', 'isBestSeller']:
+        df[col] = df[col].fillna('').astype(str)
 
-# Combine relevant features
-df['combined_features'] = df['title'] + ' ' + df['author'] + ' ' + df['category_name'] + ' ' + df['isBestSeller']
+    df['combined_features'] = (
+        df['title'].str.lower() + ' ' +
+        df['author'].str.lower() + ' ' +
+        df['category_name'].str.lower() + ' ' +
+        df['isBestSeller'].str.lower()
+    )
 
-# Vectorize using TF-IDF
-tfidf = TfidfVectorizer(max_features=100000, stop_words='english')
-tfidf_matrix = tfidf.fit_transform(df['combined_features'])
-cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
-
-# Binary Search Tree for title lookup
-class BSTNode:
-    def __init__(self, title, index):
-        self.title = title
-        self.index = index
-        self.left = None
-        self.right = None
-
-class TitleBST:
-    def __init__(self):
-        self.root = None
-
-    def insert(self, title, index):
-        self.root = self._insert(self.root, title, index)
-
-    def _insert(self, node, title, index):
-        if node is None:
-            return BSTNode(title, index)
-        if title < node.title:
-            node.left = self._insert(node.left, title, index)
-        else:
-            node.right = self._insert(node.right, title, index)
-        return node
-
-    def search(self, title):
-        return self._search(self.root, title.strip().lower())
-
-    def _search(self, node, title):
-        if node is None:
-            return None
-        if title == node.title:
-            return node.index
-        elif title < node.title:
-            return self._search(node.left, title)
-        else:
-            return self._search(node.right, title)
-
-# Build BST
-title_bst = TitleBST()
-for i, row in df.iterrows():
-    clean_title = row['title'].strip().lower()
-    title_bst.insert(clean_title, i)
-
-# Recommendation function with flexible criteria
-def get_recommendations_by(criteria, value, df=df, cosine_sim=cosine_sim):
-    value = value.strip().lower() if isinstance(value, str) else value
+    tfidf = TfidfVectorizer(stop_words='english')
+    tfidf_matrix = tfidf.fit_transform(df['combined_features'])
+    cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
 
     df['title_clean'] = df['title'].str.strip().str.lower()
-    df['author_clean'] = df['author'].str.strip().str.lower()
-    df['category_clean'] = df['category_name'].str.strip().str.lower()
-    df['stars'] = pd.to_numeric(df['stars'], errors='coerce')
-    df['normalized_stars'] = (df['stars'] - df['stars'].min()) / (df['stars'].max() - df['stars'].min())
-    df['bestseller_boost'] = df['isBestSeller'].astype(str).str.lower().isin(['true', 'yes', '1']).astype(int)
 
-    if criteria == 'title':
-        match = df[df['title_clean'] == value]
-        weight = {'sim': 0.6, 'rating': 0.3, 'bestseller': 0.1}
-    elif criteria == 'author':
-        match = df[df['author_clean'] == value]
-        weight = {'sim': 0.5, 'rating': 0.4, 'bestseller': 0.1}
-    elif criteria == 'category_name':
-        match = df[df['category_clean'] == value]
-        weight = {'sim': 0.7, 'rating': 0.2, 'bestseller': 0.1}
-    elif criteria == 'stars':
-        try:
-            rating_threshold = float(value)
-            match = df[df['stars'] >= rating_threshold]
-            weight = {'sim': 0.3, 'rating': 0.6, 'bestseller': 0.1}
-        except ValueError:
-            return "Please enter a numeric value for stars."
-    else:
-        return "Invalid criteria."
+    value = value.strip().lower()
+    match = df[df['title_clean'] == value]
 
     if match.empty:
-        return f"No books found for {criteria} = '{value}'"
+        return f"No books found for title '{value}'"
 
-    indices = match.index.tolist()
-    sim_vector = cosine_sim[indices].mean(axis=0)
+    idx = match.index[0]
+    sim_scores = list(enumerate(cosine_sim[idx]))
+    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)[1:6]
+    book_indices = [i[0] for i in sim_scores]
 
-    scores = []
-    for i in range(len(df)):
-        if i in indices:
-            continue
-        similarity = sim_vector[i]
-        rating = df.iloc[i]['normalized_stars']
-        bestseller = df.iloc[i]['bestseller_boost']
-        final_score = (
-            weight['sim'] * similarity +
-            weight['rating'] * rating +
-            weight['bestseller'] * bestseller
-        )
-        scores.append((i, final_score))
-
-    top_indices = [i[0] for i in sorted(scores, key=lambda x: x[1], reverse=True)[:5]]
-    return df.loc[top_indices, ['title', 'author', 'stars', 'isBestSeller']]
-
-
-# Example usage (remove or comment out when using in views)
-# recommendations = get_recommendations_by('title', "Adult Children of Emotionally Immature Parents: How to Heal from Distant, Rejecting, or Self-Involved Parents")
-# print(recommendations)
+    return df.iloc[book_indices][['title', 'author', 'stars', 'isBestSeller']]

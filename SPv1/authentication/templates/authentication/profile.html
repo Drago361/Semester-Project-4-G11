@@ -618,41 +618,43 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const recList = document.getElementById('reading-list');
-    let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-    if (favorites.length === 0) {
-        recList.innerHTML = `<div class="empty-state"><i class="fas fa-book-reader"></i><h3>Your Recommendation list is empty</h3><p>Recommendations will appear here.</p></div>`;
-        return;
-    }
-    const titles = favorites.map(book => book.title.trim().toLowerCase());
-    fetch('/api/recommend_for_favorites/', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({titles: titles})
-    })
-    .then(res => res.json())
-    .then(data => {
-        recList.innerHTML = '';
-        if (!data.results || data.results.length === 0) {
-            recList.innerHTML = `<div class="empty-state"><i class="fas fa-book-reader"></i><h3>No recommendations found</h3></div>`;
-            console.log("Recieved recommendations:", data);
+    document.addEventListener('DOMContentLoaded', function() {
+        const recList = document.getElementById('reading-list');
+        let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    
+        if (!favorites.length) {
+            recList.innerHTML = `<div class="empty-state"><i class="fas fa-book-reader"></i><h3>Your Recommendation list is empty</h3></div>`;
             return;
         }
-        data.results.forEach(book => {
-            const card = document.createElement('div');
-            card.className = 'book-card';
-            card.innerHTML = `
-                <div class="book-cover">Book Cover</div>
-                <div class="book-title">${book.title}</div>
-                <div class="book-author">${book.author}</div>
-                <div class="book-description">Rating: ${book.stars || 'N/A'} | Bestseller: ${book.isBestSeller}</div>
-            `;
-            recList.appendChild(card);
+    
+        const titles = favorites.map(book => book.title);
+        fetch('/api/recommend_for_favorites/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ titles })
+        })
+        .then(res => res.json())
+        .then(data => {
+            recList.innerHTML = '';
+            if (!data.results.length) {
+                recList.innerHTML = `<div class="empty-state"><i class="fas fa-book-reader"></i><h3>No recommendations found</h3></div>`;
+                return;
+            }
+            data.results.forEach(book => {
+                const card = document.createElement('div');
+                card.className = 'book-card';
+                card.innerHTML = `
+                    <div class="book-cover">Book Cover</div>
+                    <div class="book-title">${book.title}</div>
+                    <div class="book-author">${book.author}</div>
+                    <div class="book-description">Rating: ${book.stars || 'N/A'} | Bestseller: ${book.isBestSeller}</div>
+                `;
+                recList.appendChild(card);
+            });
         });
     });
-});
-</script>
+    </script>
+    
 
 </body>
 
