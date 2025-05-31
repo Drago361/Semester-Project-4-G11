@@ -12,7 +12,7 @@ def load_books_from_db():
 
 # Prepare DataFrame and compute similarity
 df = load_books_from_db()
-df = df.head(4000)
+df = df.head(8000)
 
 # Clean and fill missing values
 for col in ['title', 'author', 'category_name', 'isBestSeller']:
@@ -96,6 +96,9 @@ def get_recommendations_by(criteria, value, df=df, cosine_sim=cosine_sim):
             weight = {'sim': 0.3, 'rating': 0.6, 'bestseller': 0.1}
         except ValueError:
             return "Please enter a numeric value for stars."
+    elif criteria == 'isBestSeller':
+        match = df[df['isBestSeller'].astype(str).str.lower().isin([value])]
+        weight = {'sim': 0.3, 'rating': 0.3, 'bestseller': 0.4}
     else:
         return "Invalid criteria."
 

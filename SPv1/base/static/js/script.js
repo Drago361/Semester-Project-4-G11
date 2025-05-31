@@ -98,19 +98,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 starBtn.innerHTML = '★';
             }
         
-            // Only allow favoriting if logged in
-           /* starBtn.addEventListener('click', function() {
-                if (!window.isAuthenticated) {
-                    alert('You must be logged in to favorite books.');
-                    return;
-                }
+            starBtn.addEventListener('click', function() {
                 let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
                 if (!favorites.some(f => f.title === book.title && f.author === book.author)) {
                     favorites.push(book);
                     localStorage.setItem('favorites', JSON.stringify(favorites));
                     starBtn.innerHTML = '★';
                 }
-            }); */
+            });
     
         
         bookCard.appendChild(bookCover);
