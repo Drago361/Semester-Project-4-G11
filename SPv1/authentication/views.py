@@ -9,6 +9,7 @@ from authentication.recommender import get_recommendations_by
 from django.contrib.auth.models import User
 from .models import *
 from django.http import JsonResponse
+import json
 
 
 def login_page(request):
@@ -91,58 +92,27 @@ def profile(request):
 
 @csrf_exempt
 def recommend_for_favorites(request):
-    import json
-    from authentication.recommender import get_recommendations_by, df
     if request.method == 'POST':
         data = json.loads(request.body)
-        titles = [t.strip().lower() for t in data.get('titles', [])]
+        titles = data.get('titles', [])
         all_recs = []
         seen = set()
+
         for title in titles:
-            # Recommend by title
-            recs_title = get_recommendations_by('title', title)
-            if not isinstance(recs_title, str):
-                for _, row in recs_title.iterrows():
-                    key = (row['title'], row['author'])
-                    if key not in seen:
-                        all_recs.append({
-                            'title': row['title'],
-                            'author': row['author'],
-                            'stars': row['stars'],
-                            'isBestSeller': row['isBestSeller'],
-                        })
-                        seen.add(key)
-            # Recommend by author and bestseller if available
-            match = df[df['title'].str.strip().str.lower() == title]
-            if not match.empty:
-                author = match.iloc[0]['author'].strip().lower()
-                is_bestseller = match.iloc[0]['isBestSeller']
-                # Recommend by author
-                recs_author = get_recommendations_by('author', author)
-                if not isinstance(recs_author, str):
-                    for _, row in recs_author.iterrows():
-                        key = (row['title'], row['author'])
-                        if key not in seen:
-                            all_recs.append({
-                                'title': row['title'],
-                                'author': row['author'],
-                                'stars': row['stars'],
-                                'isBestSeller': row['isBestSeller'],
-                            })
-                            seen.add(key)
-                # Recommend by bestseller status if True
-                if is_bestseller and str(is_bestseller).lower() in ['true', 'yes', '1']:
-                    recs_bestseller = get_recommendations_by('isBestSeller', 'true')
-                    if not isinstance(recs_bestseller, str):
-                        for _, row in recs_bestseller.iterrows():
-                            key = (row['title'], row['author'])
-                            if key not in seen:
-                                all_recs.append({
-                                    'title': row['title'],
-                                    'author': row['author'],
-                                    'stars': row['stars'],
-                                    'isBestSeller': row['isBestSeller'],
-                                })
-                                seen.add(key)
+            recs = get_recommendations_by('title', title)
+            if isinstance(recs, str):
+                continue  # skip error message
+            for _, row in recs.iterrows():
+                key = (row['title'], row['author'])
+                if key not in seen and row['title'] not in titles:
+                    all_recs.append({
+                        'title': row['title'],
+                        'author': row['author'],
+                        'stars': row['stars'],
+                        'isBestSeller': row['isBestSeller'],
+                    })
+                    seen.add(key)
+
         return JsonResponse({'results': all_recs})
+
     return JsonResponse({'results': []})

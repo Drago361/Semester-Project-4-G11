@@ -1,7 +1,7 @@
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-from base.models import Book  
+from base.models import Book
 
 # Load data from SQLite database via Django ORM
 def load_books_from_db():
@@ -10,67 +10,21 @@ def load_books_from_db():
     )
     return pd.DataFrame(list(qs))
 
-# Prepare DataFrame and compute similarity
-df = load_books_from_db()
-df = df.head(8000)
+def get_recommendations_by(criteria, value):
+    df = load_books_from_db()
+    if df.empty or 'title' not in df.columns:
+        return "No book data available"
 
-# Clean and fill missing values
-for col in ['title', 'author', 'category_name', 'isBestSeller']:
-    df[col] = df[col].fillna('').astype(str)
+    df = df.head(4000)
 
-# Combine relevant features
-df['combined_features'] = df['title'] + ' ' + df['author'] + ' ' + df['category_name'] + ' ' + df['isBestSeller']
+    for col in ['title', 'author', 'category_name', 'isBestSeller']:
+        df[col] = df[col].fillna('').astype(str)
 
-# Vectorize using TF-IDF
-tfidf = TfidfVectorizer(max_features=100000, stop_words='english')
-tfidf_matrix = tfidf.fit_transform(df['combined_features'])
-cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
+    df['combined_features'] = df['title'] + ' ' + df['author'] + ' ' + df['category_name'] + ' ' + df['isBestSeller']
+    tfidf = TfidfVectorizer(max_features=100000, stop_words='english')
+    tfidf_matrix = tfidf.fit_transform(df['combined_features'])
+    cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
 
-# Binary Search Tree for title lookup
-class BSTNode:
-    def __init__(self, title, index):
-        self.title = title
-        self.index = index
-        self.left = None
-        self.right = None
-
-class TitleBST:
-    def __init__(self):
-        self.root = None
-
-    def insert(self, title, index):
-        self.root = self._insert(self.root, title, index)
-
-    def _insert(self, node, title, index):
-        if node is None:
-            return BSTNode(title, index)
-        if title < node.title:
-            node.left = self._insert(node.left, title, index)
-        else:
-            node.right = self._insert(node.right, title, index)
-        return node
-
-    def search(self, title):
-        return self._search(self.root, title.strip().lower())
-
-    def _search(self, node, title):
-        if node is None:
-            return None
-        if title == node.title:
-            return node.index
-        elif title < node.title:
-            return self._search(node.left, title)
-        else:
-            return self._search(node.right, title)
-
-# Build BST
-title_bst = TitleBST()
-for i, row in df.iterrows():
-    clean_title = row['title'].strip().lower()
-    title_bst.insert(clean_title, i)
-
-# Recommendation function with flexible criteria
-def get_recommendations_by(criteria, value, df=df, cosine_sim=cosine_sim):
     value = value.strip().lower() if isinstance(value, str) else value
 
     df['title_clean'] = df['title'].str.strip().str.lower()
@@ -96,9 +50,6 @@ def get_recommendations_by(criteria, value, df=df, cosine_sim=cosine_sim):
             weight = {'sim': 0.3, 'rating': 0.6, 'bestseller': 0.1}
         except ValueError:
             return "Please enter a numeric value for stars."
-    elif criteria == 'isBestSeller':
-        match = df[df['isBestSeller'].astype(str).str.lower().isin([value])]
-        weight = {'sim': 0.3, 'rating': 0.3, 'bestseller': 0.4}
     else:
         return "Invalid criteria."
 
