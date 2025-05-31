@@ -1,18 +1,21 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Simulate logged in user state (in a real application, this would come from a server)
     const isLoggedIn = true;
-    
+
     // Update UI based on login state
+    const loginBtn = document.getElementById('login-btn');
+    const registerBtn = document.getElementById('register-btn');
+    const profileBtn = document.getElementById('profile-btn');
+    const logoutBtn = document.getElementById('logout-btn');
+
     if (isLoggedIn) {
-        document.getElementById('login-btn').style.display = 'none';
-        document.getElementById('register-btn').style.display = 'none';
-        document.getElementById('profile-btn').style.display = 'inline-flex';
-        document.getElementById('logout-btn').style.display = 'inline-flex';
-        
+        if (loginBtn) loginBtn.style.display = 'none';
+        if (registerBtn) registerBtn.style.display = 'none';
+        if (profileBtn) profileBtn.style.display = 'inline-flex';
+        if (logoutBtn) logoutBtn.style.display = 'inline-flex';
         // Load user data (simulated)
         loadUserData();
     } else {
-        // Redirect to login if not logged in
         window.location.href = 'login.html';
     }
 
@@ -38,12 +41,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Settings form handling
     const settingsForm = document.getElementById('profile-settings-form');
     const saveSettingsBtn = document.getElementById('save-settings');
-    
-    saveSettingsBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        saveUserSettings();
-    });
-    
+    if (saveSettingsBtn) {
+        saveSettingsBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            saveUserSettings();
+        });
+    }
+
     // Password visibility toggle
     const togglePasswordButtons = document.querySelectorAll('.toggle-password');
     
@@ -70,32 +74,33 @@ document.addEventListener('DOMContentLoaded', function() {
     const closeModalBtn = document.querySelector('.close-modal');
     const cancelDeleteBtn = document.getElementById('cancel-delete');
     const confirmDeleteBtn = document.getElementById('confirm-delete');
-    
-    deleteAccountBtn.addEventListener('click', () => {
-        deleteAccountModal.style.display = 'block';
-    });
-    
-    closeModalBtn.addEventListener('click', () => {
-        deleteAccountModal.style.display = 'none';
-    });
-    
-    cancelDeleteBtn.addEventListener('click', () => {
-        deleteAccountModal.style.display = 'none';
-    });
-    
-    confirmDeleteBtn.addEventListener('click', () => {
-        // Simulate account deletion
-        const passwordConfirm = document.getElementById('password-confirm').value;
-        
-        if (!passwordConfirm) {
-            alert('Please enter your password to confirm account deletion.');
-            return;
-        }
-        
-        // Here you would add API call to delete account
-        alert('Account deleted successfully.');
-        window.location.href = 'index.html';
-    });
+
+    if (deleteAccountBtn && deleteAccountModal) {
+        deleteAccountBtn.addEventListener('click', () => {
+            deleteAccountModal.style.display = 'block';
+        });
+    }
+    if (closeModalBtn && deleteAccountModal) {
+        closeModalBtn.addEventListener('click', () => {
+            deleteAccountModal.style.display = 'none';
+        });
+    }
+    if (cancelDeleteBtn && deleteAccountModal) {
+        cancelDeleteBtn.addEventListener('click', () => {
+            deleteAccountModal.style.display = 'none';
+        });
+    }
+    if (confirmDeleteBtn) {
+        confirmDeleteBtn.addEventListener('click', () => {
+            const passwordConfirm = document.getElementById('password-confirm');
+            if (!passwordConfirm || !passwordConfirm.value) {
+                alert('Please enter your password to confirm account deletion.');
+                return;
+            }
+            alert('Account deleted successfully.');
+            window.location.href = 'index.html';
+        });
+    }
     
     // Close modal when clicking outside
     window.addEventListener('click', (e) => {
@@ -132,21 +137,21 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Library filter functionality
     const libraryFilter = document.getElementById('library-filter');
-    
-    libraryFilter.addEventListener('change', function() {
-        const filterValue = this.value;
-        // Filter library books based on selection (not implemented in this example)
-        showToast(`Filtered by ${filterValue}`);
-    });
-    
+    if (libraryFilter) {
+        libraryFilter.addEventListener('change', function() {
+            const filterValue = this.value;
+            showToast(`Filtered by ${filterValue}`);
+        });
+    }
+
     // Reviews filter functionality
     const reviewsFilter = document.getElementById('reviews-filter');
-    
-    reviewsFilter.addEventListener('change', function() {
-        const filterValue = this.value;
-        // Filter reviews based on selection (not implemented in this example)
-        showToast(`Sorted reviews by ${filterValue}`);
-    });
+    if (reviewsFilter) {
+        reviewsFilter.addEventListener('change', function() {
+            const filterValue = this.value;
+            showToast(`Sorted reviews by ${filterValue}`);
+        });
+    }
     
     // Simulate loading more books when scrolling (in a real application)
     let isLoading = false;
@@ -209,31 +214,39 @@ function showToast(message) {
 
 // Simulated functions for demonstration purposes
 function loadUserData() {
-    // Simulate API call to get user data
     setTimeout(() => {
-        // Update profile data
-        document.getElementById('profile-name').textContent = 'Jane Smith';
-        document.getElementById('profile-username').textContent = '@janesmith';
-        document.getElementById('profile-bio').textContent = 'Book lover, mystery enthusiast, and aspiring writer. I enjoy reading classics and contemporary fiction equally.';
-        
-        // Update stats
-        document.getElementById('books-read').textContent = '42';
-        document.getElementById('reviews').textContent = '12';
-        document.getElementById('followers').textContent = '87';
-        document.getElementById('following').textContent = '65';
-        
-        // Fill in settings form
-        document.getElementById('fullname').value = 'Jane Smith';
-        document.getElementById('username').value = 'janesmith';
-        document.getElementById('email').value = 'jane.smith@example.com';
-        document.getElementById('bio').value = 'Book lover, mystery enthusiast, and aspiring writer. I enjoy reading classics and contemporary fiction equally.';
-        
-        // Check genre preferences
-        document.getElementById('fiction').checked = true;
-        document.getElementById('mystery').checked = true;
-        document.getElementById('fantasy').checked = true;
-        
-        // Load reading list and library (simulated)
+        const profileName = document.getElementById('profile-name');
+        if (profileName) profileName.textContent = 'Jane Smith';
+        const profileUsername = document.getElementById('profile-username');
+        if (profileUsername) profileUsername.textContent = '@janesmith';
+        const profileBio = document.getElementById('profile-bio');
+        if (profileBio) profileBio.textContent = 'Book lover, mystery enthusiast, and aspiring writer. I enjoy reading classics and contemporary fiction equally.';
+
+        const booksRead = document.getElementById('books-read');
+        if (booksRead) booksRead.textContent = '42';
+        const reviews = document.getElementById('reviews');
+        if (reviews) reviews.textContent = '12';
+        const followers = document.getElementById('followers');
+        if (followers) followers.textContent = '87';
+        const following = document.getElementById('following');
+        if (following) following.textContent = '65';
+
+        const fullname = document.getElementById('fullname');
+        if (fullname) fullname.value = 'Jane Smith';
+        const username = document.getElementById('username');
+        if (username) username.value = 'janesmith';
+        const email = document.getElementById('email');
+        if (email) email.value = 'jane.smith@example.com';
+        const bio = document.getElementById('bio');
+        if (bio) bio.value = 'Book lover, mystery enthusiast, and aspiring writer. I enjoy reading classics and contemporary fiction equally.';
+
+        const fiction = document.getElementById('fiction');
+        if (fiction) fiction.checked = true;
+        const mystery = document.getElementById('mystery');
+        if (mystery) mystery.checked = true;
+        const fantasy = document.getElementById('fantasy');
+        if (fantasy) fantasy.checked = true;
+
         loadReadingList();
         loadLibrary();
         loadReviews();
@@ -241,10 +254,8 @@ function loadUserData() {
 }
 
 function loadReadingList() {
-    // Simulate API call to get reading list
     const readingList = document.getElementById('reading-list');
-    
-    // Clear loading state or empty state
+    if (!readingList) return;
     readingList.innerHTML = '';
     
     // Check if user has books in reading list
@@ -369,10 +380,8 @@ function loadReadingList() {
 }
 
 function loadLibrary() {
-    // Simulate API call to get user's library
     const libraryList = document.getElementById('library-list');
-    
-    // Clear current content
+    if (!libraryList) return;
     libraryList.innerHTML = '';
     
     // Sample library books
@@ -435,10 +444,8 @@ function loadLibrary() {
 }
 
 function loadReviews() {
-    // Simulate API call to get user's reviews
     const reviewsList = document.getElementById('user-reviews');
-    
-    // Clear current content
+    if (!reviewsList) return;
     reviewsList.innerHTML = '';
     
     // Check if user has reviews
@@ -574,22 +581,19 @@ function loadReviews() {
 }
 
 function saveUserSettings() {
-    // Get values from form
-    const fullname = document.getElementById('fullname').value;
-    const username = document.getElementById('username').value;
-    const email = document.getElementById('email').value;
-    const bio = document.getElementById('bio').value;
-    
-    // Validate form
+    const fullname = document.getElementById('fullname');
+    const username = document.getElementById('username');
+    const email = document.getElementById('email');
+    const bio = document.getElementById('bio');
     if (!fullname || !username || !email) {
         alert('Please fill in all required fields.');
         return;
     }
     
     // Check if password fields are filled
-    const currentPassword = document.getElementById('current-password').value;
-    const newPassword = document.getElementById('new-password').value;
-    const confirmPassword = document.getElementById('confirm-password').value;
+    const currentPassword = document.getElementById('current-password');
+    const newPassword = document.getElementById('new-password');
+    const confirmPassword = document.getElementById('confirm-password');
     
     if (newPassword && newPassword !== confirmPassword) {
         alert('New password and confirm password do not match.');
@@ -598,17 +602,20 @@ function saveUserSettings() {
     
     // Simulate API call to save settings
     setTimeout(() => {
-        // Update profile data
-        document.getElementById('profile-name').textContent = fullname;
-        document.getElementById('profile-username').textContent = '@' + username;
-        document.getElementById('profile-bio').textContent = bio;
-        
-        // Clear password fields
-        document.getElementById('current-password').value = '';
-        document.getElementById('new-password').value = '';
-        document.getElementById('confirm-password').value = '';
-        
-        // Show success message
+        const profileName = document.getElementById('profile-name');
+        if (profileName) profileName.textContent = fullname.value;
+        const profileUsername = document.getElementById('profile-username');
+        if (profileUsername) profileUsername.textContent = '@' + username.value;
+        const profileBio = document.getElementById('profile-bio');
+        if (profileBio) profileBio.textContent = bio.value;
+
+        const currentPassword = document.getElementById('current-password');
+        if (currentPassword) currentPassword.value = '';
+        const newPassword = document.getElementById('new-password');
+        if (newPassword) newPassword.value = '';
+        const confirmPassword = document.getElementById('confirm-password');
+        if (confirmPassword) confirmPassword.value = '';
+
         showToast('Profile settings saved successfully!');
     }, 500);
 }
