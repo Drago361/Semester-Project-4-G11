@@ -6,12 +6,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     
     const searchLogo = document.querySelector('.search-logo');
-    searchLogo.addEventListener('mouseover', function() {
-        this.style.textShadow = "0 0 15px rgba(58, 134, 255, 0.7)";
-    });
-    searchLogo.addEventListener('mouseout', function() {
-        this.style.textShadow = "1px 1px 2px rgba(0, 0, 0, 0.1)";
-    });
+    if (searchLogo) {
+        searchLogo.addEventListener('mouseover', function () {
+            this.style.textShadow = "0 0 15px rgba(58, 134, 255, 0.7)";
+        });
+        searchLogo.addEventListener('mouseout', function () {
+            this.style.textShadow = "1px 1px 2px rgba(0, 0, 0, 0.1)";
+        });
+    }
+
     
     suggestions.forEach(suggestion => {
         suggestion.addEventListener('click', function() {
