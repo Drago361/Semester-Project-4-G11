@@ -40,7 +40,7 @@ def register_page(request):
         password = request.POST.get('password')
         terms_agreed = request.POST.get('terms')
 
-        #validation 
+        
         if not all([fullname, email, username, password, terms_agreed]):
             messages.error(request, "Please fill in all fields and accept the terms.")
             return render(request, 'authentication/register.html')
@@ -53,7 +53,7 @@ def register_page(request):
             messages.error(request, "Email is already registered.")
             return render(request, 'authentication/register.html')
 
-        #user creation
+        
         user = User.objects.create_user(username=username, email=email, password=password)
         user.first_name = fullname  
         user.save()
@@ -67,8 +67,9 @@ def register_page(request):
 @login_required
 def profile_page(request):
     return render(request, 'authentication/profile.html', {
-        'user': request.user  
-    })
+        'user': request.user, 
+        'is_authenticated': request.user.is_authenticated,
+        })
 
 def logout_view(request):
     logout(request)
@@ -92,22 +93,23 @@ def profile(request):
         'recommendations': recommendations,
         'message': message,
     })
-'''
+
 @csrf_exempt
 def recommend_for_favorites(request):
-    import json
     if request.method == 'POST':
         data = json.loads(request.body)
         titles = [t.strip().lower() for t in data.get('titles', [])]
         all_recs = []
         seen = set()
+
         for title in titles:
-            recs = get_recommendations_by('title', title)
+            recs = get_recommendations_by('content', title)
             if isinstance(recs, str):
                 continue
+
             for _, row in recs.iterrows():
                 key = (row['title'], row['author'])
-                if key not in seen and row['title'] not in titles:
+                if key not in seen and row['title'].lower() not in titles:
                     all_recs.append({
                         'title': row['title'],
                         'author': row['author'],
@@ -115,9 +117,12 @@ def recommend_for_favorites(request):
                         'isBestSeller': row['isBestSeller'],
                     })
                     seen.add(key)
+
         return JsonResponse({'results': all_recs})
+
     return JsonResponse({'results': []})
-'''
+
+
 @csrf_exempt
 def content_similarity_view(request):
     print("Received POST for content similarity")
@@ -126,14 +131,12 @@ def content_similarity_view(request):
 
 
     if request.method == "POST":
-        # Try parsing JSON first
         try:
             import json
             data = json.loads(request.body)
             dropdown_id = data.get("dropdown_id")
             value = data.get("value")
         except (json.JSONDecodeError, TypeError):
-            # Fallback to form POST
             dropdown_id = request.POST.get("dropdown_id")
             value = request.POST.get("value")
 
@@ -152,30 +155,46 @@ def content_similarity_view(request):
 
 
 
-@csrf_exempt  # Use this only if you're not using CSRF tokens in JS
+@csrf_exempt
 def recommend_view(request):
-    print("🧠 recommend_view() was called!")
+    print("recommend_view() was called!")
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            
             dropdown_type = data.get('dropdown_type')
             value = data.get('value')
 
             if not dropdown_type or not value:
                 return JsonResponse({'error': 'Missing parameters'}, status=400)
 
+            if dropdown_type == 'multiple':
+                all_recs = []
+                seen = set()
+                for title in value:
+                    result_df = get_recommendations_by('content', title.lower())
+                    if isinstance(result_df, str):
+                        continue
+                    for _, row in result_df.iterrows():
+                        key = (row['title'], row['author'])
+                        if key not in seen and row['title'].lower() not in [t.lower() for t in value]:
+                            all_recs.append({
+                                'title': row['title'],
+                                'author': row['author'],
+                                'stars': row['stars'],
+                                'isBestSeller': row['isBestSeller'],
+                            })
+                            seen.add(key)
+                return JsonResponse(all_recs, safe=False)
 
             result_df = get_recommendations_by(dropdown_type, value)
-            
             if isinstance(result_df, str):
-                print("⚠️ No recommendations found:", result_df)
+                print("No recommendations found:", result_df)
                 print("Dropdown type:", dropdown_type)
                 print("Value:", value)
-
                 return JsonResponse({'error': result_df}, status=404)
 
             return JsonResponse(result_df.to_dict(orient='records'), safe=False)
+
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 

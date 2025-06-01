@@ -1,33 +1,69 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const dropdown = document.getElementById('similarity-type');
     const similaritySection = document.querySelector('.similarity-section');
+    const readingList = document.getElementById('reading-list'); 
 
-    async function fetchRecommendations(type, value) {
-        try {
-            const response = await fetch('/api/recommend/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCSRFToken() // only if CSRF protection is needed
-                },
-                body: JSON.stringify({
-                    dropdown_type: type,
-                    value: value
-                })
-            });
+    const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
 
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-
-            const recommendations = await response.json();
-            updateRecommendations(recommendations);
-        } catch (error) {
-            console.error('Error fetching recommendations:', error);
-        }
+    if (favorites.length === 0) {
+        similaritySection.innerHTML += '<p>No favorites found for recommendations.</p>';
+        readingList.innerHTML += '<p>No favorites found for aggregated recommendations.</p>';
+        return;
     }
 
-    function updateRecommendations(books) {
+    
+    const singleValue = favorites[0].title.toLowerCase();
+    fetch('/api/recommend/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken()
+        },
+        body: JSON.stringify({
+            dropdown_type: 'content',
+            value: singleValue
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (Array.isArray(data)) {
+            renderRecommendations(data, similaritySection);
+        } else {
+            similaritySection.innerHTML += '<p>No recommendations found.</p>';
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        similaritySection.innerHTML += '<p>Error loading recommendations.</p>';
+    });
+
+   
+    const allTitles = favorites.map(book => book.title);
+    fetch('/api/recommend/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken()
+        },
+        body: JSON.stringify({
+            dropdown_type: 'multiple',
+            value: allTitles
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (Array.isArray(data)) {
+            renderRecommendations(data, readingList);
+        } else {
+            readingList.innerHTML += '<p>No aggregated recommendations found.</p>';
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        readingList.innerHTML += '<p>Error loading aggregated recommendations.</p>';
+    });
+
+    // 🔧 Shared renderer
+    function renderRecommendations(books, targetElement) {
         const container = document.createElement('div');
         container.classList.add('recommendations');
 
@@ -39,30 +75,10 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
         `).join('');
 
-        // Clear previous results
-        const old = similaritySection.querySelector('.recommendations');
-        if (old) old.remove();
-
-        similaritySection.appendChild(container);
+        targetElement.innerHTML = ''; 
+        targetElement.appendChild(container);
     }
 
-    // Optional: Replace this with real user reading history, or a default category
-    const getInitialValue = () => {
-        return 'fiction'; // Placeholder; adjust dynamically based on user data
-    };
-
-    dropdown.addEventListener('change', () => {
-        const type = dropdown.value;
-        const value = getInitialValue();
-        console.log('Dropdown changed to:', type, 'with value:', value); //TOROLD MAJD KI TE FASZ
-
-        fetchRecommendations(type, value);
-    });
-
-    // Trigger initial load
-    dropdown.dispatchEvent(new Event('change'));
-
-    // CSRF helper (for Django)
     function getCSRFToken() {
         const cookie = document.cookie.split('; ').find(row => row.startsWith('csrftoken='));
         return cookie ? cookie.split('=')[1] : '';

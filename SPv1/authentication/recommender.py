@@ -3,33 +3,27 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from base.models import Book
 
-# Load data from SQLite database via Django ORM
 def load_books_from_db():
     qs = Book.objects.all().values(
         'title', 'author', 'stars', 'price', 'category_id', 'isBestSeller', 'category_name'
     )
     return pd.DataFrame(list(qs))
 
-# Prepare DataFrame and compute similarity
+
 df = load_books_from_db()
-df = df.head(4000)
+df = df.head(40000)
 print("The database was loaded")
 
-# Clean and fill missing values
 for col in ['title', 'author', 'category_name', 'isBestSeller']:
     df[col] = df[col].fillna('').astype(str)
 
-# Combine relevant features for TF-IDF
 df['combined_features'] = df['title'] + ' ' + df['author'] + ' ' + df['category_name'] + ' ' + df['isBestSeller']
 
-# Vectorize text
 tfidf = TfidfVectorizer(max_features=100000, stop_words='english')
 tfidf_matrix = tfidf.fit_transform(df['combined_features'])
 
-# Compute cosine similarity
 cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
 
-# Optional BST for title lookup (not used here but available)
 class BSTNode:
     def __init__(self, title, index):
         self.title = title
@@ -66,24 +60,26 @@ class TitleBST:
         else:
             return self._search(node.right, title)
 
-# Build BST
 title_bst = TitleBST()
 for i, row in df.iterrows():
     clean_title = row['title'].strip().lower()
     title_bst.insert(clean_title, i)
 
-# ✅ Main Recommendation Function (supports dropdown types)
+
 def get_recommendations_by(dropdown_type, value, df=df, cosine_sim=cosine_sim):
     value = value.strip().lower() if isinstance(value, str) else value
 
     df['title_clean'] = df['title'].str.strip().str.lower()
     df['author_clean'] = df['author'].str.strip().str.lower()
     df['category_clean'] = df['category_name'].str.strip().str.lower()
+
+
+
     df['stars'] = pd.to_numeric(df['stars'], errors='coerce')
     df['normalized_stars'] = (df['stars'] - df['stars'].min()) / (df['stars'].max() - df['stars'].min())
     df['bestseller_boost'] = df['isBestSeller'].astype(str).str.lower().isin(['true', 'yes', '1']).astype(int)
 
-    # Mapping for dropdown values to internal logic
+    
     dropdown_mapping = {
         "content": {"criteria": "title_clean", "weight": {"sim": 0.6, "rating": 0.3, "bestseller": 0.1}},
         "genre": {"criteria": "category_clean", "weight": {"sim": 0.7, "rating": 0.2, "bestseller": 0.1}},
@@ -98,10 +94,15 @@ def get_recommendations_by(dropdown_type, value, df=df, cosine_sim=cosine_sim):
     criteria_col = mapping['criteria']
     weights = mapping['weight']
 
-    match = df[df[criteria_col].str.contains(value, case=False, na=False)]
+    match = df[df[criteria_col] == value]
+    print("🔍 Initial match count:", len(match))
+    if match.empty and dropdown_type == 'content':
+        match = df[df[criteria_col].str.contains(value, case=False, na=False)]
+        print("Fallback match count:", len(match))
+
 
     if match.empty:
-        print(f"⚠️ No matches for {criteria_col} containing '{value}'")
+        print(f"No matches for {criteria_col} containing '{value}'")
         return f"No books found for {dropdown_type} = '{value}'"
 
     indices = match.index.tolist()

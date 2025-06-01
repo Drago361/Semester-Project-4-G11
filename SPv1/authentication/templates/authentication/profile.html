@@ -5,6 +5,7 @@
 
 {% block content %}
 
+
 <!DOCTYPE html>
 <html lang="en">
 <main>
@@ -91,7 +92,7 @@
                 </div>
 
                 <div class="book-grid" id="library-list">
-                    <!--Deleted static books, favorites will be dynamically loaded from localStorage-->
+                   
                     
                 </div>
             </div>
@@ -99,19 +100,7 @@
             <div class="tab-content" id="content-similarity-tab">
                 <div class="tab-header">
                     <h2>Content Similarity Recommendations</h2>
-                    <div class="filter-options">
-                        <select id="similarity-type">
-                            <option value="content">Content-Based</option>
-                            <option value="genre">Genre Similarity</option>
-                            <option value="author">Author Similarity</option>
-                            <option value="theme">Theme Similarity</option>
-                        </select>
-                        <button class="action-btn" id="refresh-similarity">
-                            <i class="fas fa-sync-alt"></i> Refresh
-                        </button>
-                    </div>
                 </div>
-
                 <div class="similarity-section">
                     <div class="similarity-header">
                         <h3>Based on your reading history</h3>
@@ -297,7 +286,7 @@
     </div>
 </main>
 
-<!-- Modal for delete account confirmation -->
+
 <div class="modal" id="delete-account-modal">
     <div class="modal-content">
         <span class="close-modal">&times;</span>
@@ -324,20 +313,20 @@
     </div>
 </div>
 
-<script>// Tab switching functionality
+<script>
     const tabButtons = document.querySelectorAll('.tab-btn');
     const tabContents = document.querySelectorAll('.tab-content');
     
     tabButtons.forEach(button => {
         button.addEventListener('click', () => {
-            // Remove active class from all tabs
+            
             tabButtons.forEach(btn => btn.classList.remove('active'));
             tabContents.forEach(content => content.classList.remove('active'));
             
-            // Add active class to clicked tab
+           
             button.classList.add('active');
             
-            // Show corresponding content
+      
             const tabId = button.getAttribute('data-tab');
             document.getElementById(`${tabId}-tab`).classList.add('active');
         });
@@ -387,7 +376,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="book-description">${book.description}</div>
                 <button class="star-btn filled" title="Remove from Favorites">&#9733;</button>
             `;
-            // Unfavorite button
+            
+            
             card.querySelector('.star-btn').addEventListener('click', function() {
                 let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
                 favorites = favorites.filter(f => !(f.title === book.title && f.author === book.author));
@@ -401,9 +391,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<script>
 
-</script>
 {% load static %}
 <script src="{% static 'js/recommendations.js' %}" defer></script>
 

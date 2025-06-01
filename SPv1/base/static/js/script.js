@@ -103,10 +103,10 @@ document.addEventListener('DOMContentLoaded', function() {
         
             // Only allow favoriting if logged in
             starBtn.addEventListener('click', function() {
-                if (!window.isAuthenticated) {
-                    alert('You must be logged in to favorite books.');
-                    return;
-                }
+                // if (!window.isAuthenticated) {
+                //     alert('You must be logged in to favorite books.');
+                //     return;
+                // }
                 let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
                 if (!favorites.some(f => f.title === book.title && f.author === book.author)) {
                     favorites.push(book);
