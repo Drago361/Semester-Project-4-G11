@@ -116,3 +116,66 @@ def recommend_for_favorites(request):
         return JsonResponse({'results': all_recs})
 
     return JsonResponse({'results': []})
+
+@csrf_exempt
+def content_similarity_view(request):
+    print("Received POST for content similarity")
+    print("Dropdown:", dropdown_id)
+    print("Value:", value)
+
+
+    if request.method == "POST":
+        # Try parsing JSON first
+        try:
+            import json
+            data = json.loads(request.body)
+            dropdown_id = data.get("dropdown_id")
+            value = data.get("value")
+        except (json.JSONDecodeError, TypeError):
+            # Fallback to form POST
+            dropdown_id = request.POST.get("dropdown_id")
+            value = request.POST.get("value")
+
+        if not dropdown_id or not value:
+            return JsonResponse({'error': 'Missing parameters'}, status=400)
+
+        result = get_recommendations_by(dropdown_id, value)
+        if isinstance(result, str):
+            return JsonResponse({'error': result}, status=404)
+
+        return JsonResponse({'recommendations': result.to_dict(orient='records')}, status=200)
+
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+
+
+
+
+@csrf_exempt  # Use this only if you're not using CSRF tokens in JS
+def recommend_view(request):
+    print("🧠 recommend_view() was called!")
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            
+            dropdown_type = data.get('dropdown_type')
+            value = data.get('value')
+
+            if not dropdown_type or not value:
+                return JsonResponse({'error': 'Missing parameters'}, status=400)
+
+
+            result_df = get_recommendations_by(dropdown_type, value)
+            
+            if isinstance(result_df, str):
+                print("⚠️ No recommendations found:", result_df)
+                print("Dropdown type:", dropdown_type)
+                print("Value:", value)
+
+                return JsonResponse({'error': result_df}, status=404)
+
+            return JsonResponse(result_df.to_dict(orient='records'), safe=False)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
