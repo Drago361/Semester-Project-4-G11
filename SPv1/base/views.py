@@ -1,8 +1,48 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-import csv
-from datetime import datetime
+from django.http import JsonResponse
 from base.models import Book
+
+# BST Node class
+class BSTNode:
+    def __init__(self, title, data):
+        self.title = title.lower()
+        self.data = data
+        self.left = None
+        self.right = None
+
+    def insert(self, title, data):
+        title = title.lower()
+        if title < self.title:
+            if self.left is None:
+                self.left = BSTNode(title, data)
+            else:
+                self.left.insert(title, data)
+        elif title > self.title:
+            if self.right is None:
+                self.right = BSTNode(title, data)
+            else:
+                self.right.insert(title, data)
+
+    def search(self, query, results):
+        # In-order traversal with substring match
+        if self.left:
+            self.left.search(query, results)
+        if query in self.title:
+            results.append(self.data)
+        if self.right:
+            self.right.search(query, results)
+
+def build_bst_from_db():
+    root = None
+    books = Book.objects.all().values('title', 'author')
+    for book in books:
+        title = book['title']
+        if not root:
+            root = BSTNode(title, book)
+        else:
+            root.insert(title, book)
+    return root
 
 def home(request):
     return render(request, "base/index.html")
@@ -32,3 +72,37 @@ def login(request):
 
 def register(request):
     return render(request, "base/register.html")
+
+def autocomplete_books(request):
+    if 'term' in request.GET:
+        query = request.GET.get('term')
+        books = Book.objects.filter(title__icontains=query)[:15]
+        results = [
+            {"label": f"{book.title} - {book.author}", "value": book.title}
+            for book in books
+        ]
+        return JsonResponse(results, safe=False)
+    return JsonResponse([], safe=False)
+
+def search_books_bst(request):
+    query = request.GET.get('q', '').strip().lower()
+    sort = request.GET.get('sort', 'relevance')  # Default to 'relevance' (Title)
+    if not query:
+        return JsonResponse({'results': []})
+
+    bst_root = build_bst_from_db()
+    results = []
+    if bst_root:
+        bst_root.search(query, results)
+
+    # Sorting logic
+    if sort == 'author':
+        results.sort(key=lambda x: x.get('author', '').lower())
+    elif sort == 'genre':
+        results.sort(key=lambda x: x.get('genre', '').lower())
+    elif sort == 'rating':
+        results.sort(key=lambda x: x.get('rating', 0), reverse=True)
+    else:  # Default: Title
+        results.sort(key=lambda x: x.get('title', '').lower())
+
+    return JsonResponse({'results': results})

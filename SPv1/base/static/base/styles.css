@@ -488,3 +488,55 @@ margin-top: 10px;
     border-radius: 4px;
     font-family: inherit;
 }
+
+/* Star Button Styles */
+.star-btn {
+    background: none;
+    border: none;
+    font-size: 1.7rem;
+    color: #f5c518;
+    cursor: pointer;
+    transition: transform 0.1s, color 0.2s;
+    margin-left: 8px;
+    vertical-align: middle;
+    outline: none;
+    padding: 0 4px;
+}
+.star-btn:hover,
+.star-btn:focus {
+    color: #ffd700;
+    transform: scale(1.2) rotate(-10deg);
+}
+.star-btn.filled {
+    color: #ffd700;
+}
+
+/* ===== Autocomplete Dropdown Styles ===== */
+.ui-autocomplete {
+    position: absolute;
+    z-index: 10000;
+    max-height: 250px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ui-menu-item-wrapper {
+    padding: 10px 15px;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.ui-menu-item-wrapper:hover {
+    background-color: #f7f7f7;
+}
+
+.ui-menu-item-wrapper {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
