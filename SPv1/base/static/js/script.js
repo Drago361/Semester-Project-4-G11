@@ -3,8 +3,40 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchButton = document.getElementById('search-button');
     const suggestions = document.querySelectorAll('.suggestion');
     const resultsSection = document.querySelector('.results-section');
-    
-    
+    const sortDropdown = document.getElementById('sort-dropdown'); 
+
+    let currentSort = sortDropdown.value;
+
+    function performSearch() {
+        const searchTerm = searchInput.value.trim();
+        if (searchTerm === '') return;
+
+        while (resultsSection.firstChild) {
+            resultsSection.removeChild(resultsSection.firstChild);
+        }
+
+        fetch(`/api/search_books_bst/?q=${encodeURIComponent(searchTerm)}&sort=${encodeURIComponent(currentSort)}`)
+            .then(response => response.json())
+            .then(data => {
+                const books = data.results;
+                if (books.length === 0) {
+                    resultsSection.innerHTML = '<p>No books found.</p>';
+                    return;
+                }
+                books.forEach((book, i) => {
+                    createBookCard({
+                        title: book.title,
+                        author: book.author,
+                        description: book.description || ''
+                    }, i * 100);
+                });
+                resultsSection.scrollIntoView({ behavior: 'smooth' });
+            })
+            .catch(() => {
+                resultsSection.innerHTML = '<p>Error searching for books.</p>';
+            });
+    }
+
     const searchLogo = document.querySelector('.search-logo');
     if (searchLogo) {
         searchLogo.addEventListener('mouseover', function () {
@@ -32,42 +64,19 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    searchButton.addEventListener('click', function() {
-        const searchTerm = searchInput.value.trim();
-        if (searchTerm === '') return;
-
-        while (resultsSection.firstChild) {
-            resultsSection.removeChild(resultsSection.firstChild);
-        }
-
-        fetch(`/api/search_books_bst/?q=${encodeURIComponent(searchTerm)}`)
-            .then(response => response.json())
-            .then(data => {
-                const books = data.results;
-                if (books.length === 0) {
-                    resultsSection.innerHTML = '<p>No books found.</p>';
-                    return;
-                }
-                books.forEach((book, i) => {
-                    createBookCard({
-                        title: book.title,
-                        author: book.author,
-                        description: book.description || ''
-                    }, i * 100);
-                });
-                resultsSection.scrollIntoView({ behavior: 'smooth' });
-            })
-            .catch(() => {
-                resultsSection.innerHTML = '<p>Error searching for books.</p>';
-            });
-    });
+    searchButton.addEventListener('click', performSearch);
     
     searchInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
-            searchButton.click();
+            performSearch();
         }
     });
     
+    sortDropdown.addEventListener('change', function() {
+        currentSort = this.value;
+        performSearch();
+    });
+
     function createBookCard(book, delay) {
         const bookCard = document.createElement('div');
         bookCard.className = 'book-card';
@@ -101,7 +110,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 starBtn.innerHTML = '★';
             }
         
-            // Only allow favoriting if logged in
             starBtn.addEventListener('click', function() {
                 // if (!window.isAuthenticated) {
                 //     alert('You must be logged in to favorite books.');

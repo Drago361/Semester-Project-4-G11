@@ -86,6 +86,7 @@ def autocomplete_books(request):
 
 def search_books_bst(request):
     query = request.GET.get('q', '').strip().lower()
+    sort = request.GET.get('sort', 'relevance')  # Default to 'relevance' (Title)
     if not query:
         return JsonResponse({'results': []})
 
@@ -93,4 +94,15 @@ def search_books_bst(request):
     results = []
     if bst_root:
         bst_root.search(query, results)
+
+    # Sorting logic
+    if sort == 'author':
+        results.sort(key=lambda x: x.get('author', '').lower())
+    elif sort == 'genre':
+        results.sort(key=lambda x: x.get('genre', '').lower())
+    elif sort == 'rating':
+        results.sort(key=lambda x: x.get('rating', 0), reverse=True)
+    else:  # Default: Title
+        results.sort(key=lambda x: x.get('title', '').lower())
+
     return JsonResponse({'results': results})

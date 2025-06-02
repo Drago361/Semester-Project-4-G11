@@ -15,6 +15,7 @@ import json
 
 
 
+
 def login_page(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -98,14 +99,15 @@ def profile(request):
 def recommend_for_favorites(request):
     if request.method == 'POST':
         data = json.loads(request.body)
-        titles = [t.strip().lower() for t in data.get('titles', [])]
+        titles = data.get('titles', [])
         all_recs = []
         seen = set()
 
         for title in titles:
             recs = get_recommendations_by('content', title)
             if isinstance(recs, str):
-                continue
+
+                continue  # skip error message
 
             for _, row in recs.iterrows():
                 key = (row['title'], row['author'])
@@ -122,7 +124,6 @@ def recommend_for_favorites(request):
 
     return JsonResponse({'results': []})
 
-
 @csrf_exempt
 def content_similarity_view(request):
     print("Received POST for content similarity")
@@ -131,12 +132,14 @@ def content_similarity_view(request):
 
 
     if request.method == "POST":
+
         try:
             import json
             data = json.loads(request.body)
             dropdown_id = data.get("dropdown_id")
             value = data.get("value")
         except (json.JSONDecodeError, TypeError):
+
             dropdown_id = request.POST.get("dropdown_id")
             value = request.POST.get("value")
 
@@ -155,17 +158,21 @@ def content_similarity_view(request):
 
 
 
+
 @csrf_exempt
 def recommend_view(request):
     print("recommend_view() was called!")
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
+
+
             dropdown_type = data.get('dropdown_type')
             value = data.get('value')
 
             if not dropdown_type or not value:
                 return JsonResponse({'error': 'Missing parameters'}, status=400)
+
 
             if dropdown_type == 'multiple':
                 all_recs = []
@@ -199,3 +206,6 @@ def recommend_view(request):
             return JsonResponse({'error': str(e)}, status=500)
 
     return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+
+

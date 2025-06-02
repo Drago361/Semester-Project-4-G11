@@ -9,7 +9,6 @@ def load_books_from_db():
     )
     return pd.DataFrame(list(qs))
 
-
 df = load_books_from_db()
 df = df.head(40000)
 print("The database was loaded")
@@ -17,12 +16,14 @@ print("The database was loaded")
 for col in ['title', 'author', 'category_name', 'isBestSeller']:
     df[col] = df[col].fillna('').astype(str)
 
+
 df['combined_features'] = df['title'] + ' ' + df['author'] + ' ' + df['category_name'] + ' ' + df['isBestSeller']
 
 tfidf = TfidfVectorizer(max_features=100000, stop_words='english')
 tfidf_matrix = tfidf.fit_transform(df['combined_features'])
 
 cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
+
 
 class BSTNode:
     def __init__(self, title, index):
@@ -65,7 +66,6 @@ for i, row in df.iterrows():
     clean_title = row['title'].strip().lower()
     title_bst.insert(clean_title, i)
 
-
 def get_recommendations_by(dropdown_type, value, df=df, cosine_sim=cosine_sim):
     value = value.strip().lower() if isinstance(value, str) else value
 
@@ -79,7 +79,6 @@ def get_recommendations_by(dropdown_type, value, df=df, cosine_sim=cosine_sim):
     df['normalized_stars'] = (df['stars'] - df['stars'].min()) / (df['stars'].max() - df['stars'].min())
     df['bestseller_boost'] = df['isBestSeller'].astype(str).str.lower().isin(['true', 'yes', '1']).astype(int)
 
-    
     dropdown_mapping = {
         "content": {"criteria": "title_clean", "weight": {"sim": 0.6, "rating": 0.3, "bestseller": 0.1}},
         "genre": {"criteria": "category_clean", "weight": {"sim": 0.7, "rating": 0.2, "bestseller": 0.1}},
@@ -94,6 +93,7 @@ def get_recommendations_by(dropdown_type, value, df=df, cosine_sim=cosine_sim):
     criteria_col = mapping['criteria']
     weights = mapping['weight']
 
+
     match = df[df[criteria_col] == value]
     print("🔍 Initial match count:", len(match))
     if match.empty and dropdown_type == 'content':
@@ -103,7 +103,8 @@ def get_recommendations_by(dropdown_type, value, df=df, cosine_sim=cosine_sim):
 
     if match.empty:
         print(f"No matches for {criteria_col} containing '{value}'")
-        return f"No books found for {dropdown_type} = '{value}'"
+
+    match = df[df[criteria_col].str.contains(value, case=False, na=False)]
 
     indices = match.index.tolist()
     sim_vector = cosine_sim[indices].mean(axis=0)
@@ -123,4 +124,6 @@ def get_recommendations_by(dropdown_type, value, df=df, cosine_sim=cosine_sim):
         scores.append((i, final_score))
 
     top_indices = [i[0] for i in sorted(scores, key=lambda x: x[1], reverse=True)[:5]]
+
     return df.loc[top_indices, ['title', 'author', 'stars', 'isBestSeller']]
+

@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     const similaritySection = document.querySelector('.similarity-section');
-    const readingList = document.getElementById('reading-list'); 
+    const readingList = document.getElementById('reading-list');
 
     const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
 
@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
-    
+    // 📘 Content-based recommendations (based on first favorite book)
     const singleValue = favorites[0].title.toLowerCase();
     fetch('/api/recommend/', {
         method: 'POST',
@@ -28,15 +28,15 @@ document.addEventListener('DOMContentLoaded', function () {
         if (Array.isArray(data)) {
             renderRecommendations(data, similaritySection);
         } else {
-            similaritySection.innerHTML += '<p>No recommendations found.</p>';
+            similaritySection.innerHTML += '<p>No content-based recommendations found.</p>';
         }
     })
     .catch(err => {
-        console.error(err);
+        console.error('❌ Error loading content-based recommendations:', err);
         similaritySection.innerHTML += '<p>Error loading recommendations.</p>';
     });
 
-   
+    // 📚 Aggregated recommendations (based on all favorite titles)
     const allTitles = favorites.map(book => book.title);
     fetch('/api/recommend/', {
         method: 'POST',
@@ -58,11 +58,11 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     })
     .catch(err => {
-        console.error(err);
+        console.error('❌ Error loading aggregated recommendations:', err);
         readingList.innerHTML += '<p>Error loading aggregated recommendations.</p>';
     });
 
-    // 🔧 Shared renderer
+    // 🔧 Render book list into a given section
     function renderRecommendations(books, targetElement) {
         const container = document.createElement('div');
         container.classList.add('recommendations');
@@ -75,10 +75,11 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
         `).join('');
 
-        targetElement.innerHTML = ''; 
+        targetElement.innerHTML = '';
         targetElement.appendChild(container);
     }
 
+    // 🔐 CSRF token helper for Django
     function getCSRFToken() {
         const cookie = document.cookie.split('; ').find(row => row.startsWith('csrftoken='));
         return cookie ? cookie.split('=')[1] : '';
