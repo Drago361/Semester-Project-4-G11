@@ -36,11 +36,17 @@ document.addEventListener('DOMContentLoaded', function() {
         const searchTerm = searchInput.value.trim();
         if (searchTerm === '') return;
 
+        // Get selected sort option
+        const sortDropdown = document.getElementById('sort-dropdown');
+        let sortValue = sortDropdown ? sortDropdown.value : 'title';
+        // Map dropdown value to backend expected value
+        if (sortValue === 'relevance') sortValue = 'title';
+
         while (resultsSection.firstChild) {
             resultsSection.removeChild(resultsSection.firstChild);
         }
 
-        fetch(`/api/search_books_bst/?q=${encodeURIComponent(searchTerm)}`)
+        fetch(`/api/search_books_bst/?q=${encodeURIComponent(searchTerm)}&sort=${encodeURIComponent(sortValue)}`)
             .then(response => response.json())
             .then(data => {
                 const books = data.results;
